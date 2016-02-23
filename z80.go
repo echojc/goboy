@@ -76,10 +76,10 @@ func write(addr uint16, v uint8) {
 }
 
 var opcode [0x255]func() = [0x255]func(){
-	NOP, LD_BC_NN, LD_mBC_A, TODO, TODO, TODO, LD_B_N, TODO, LD_mNN_SP, TODO, LD_A_mBC, TODO, TODO, TODO, LD_C_N, TODO,
-	TODO, LD_DE_NN, LD_mDE_A, TODO, TODO, TODO, LD_D_N, TODO, TODO, TODO, LD_A_mDE, TODO, TODO, TODO, LD_E_N, TODO,
-	TODO, LD_HL_NN, LDI_mHL_A, TODO, TODO, TODO, LD_H_N, TODO, TODO, TODO, LDI_A_mHL, TODO, TODO, TODO, LD_L_N, TODO,
-	TODO, LD_SP_NN, LDD_mHL_A, TODO, TODO, TODO, LD_mHL_N, TODO, TODO, TODO, LDD_A_mHL, TODO, TODO, TODO, LD_A_N, TODO,
+	NOP, LD_BC_NN, LD_mBC_A, TODO, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, TODO, LD_A_mBC, TODO, INC_C, DEC_C, LD_C_N, TODO,
+	TODO, LD_DE_NN, LD_mDE_A, TODO, INC_D, DEC_D, LD_D_N, TODO, TODO, TODO, LD_A_mDE, TODO, INC_E, DEC_E, LD_E_N, TODO,
+	TODO, LD_HL_NN, LDI_mHL_A, TODO, INC_H, DEC_H, LD_H_N, TODO, TODO, TODO, LDI_A_mHL, TODO, INC_L, DEC_L, LD_L_N, TODO,
+	TODO, LD_SP_NN, LDD_mHL_A, TODO, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, TODO, LDD_A_mHL, TODO, INC_A, DEC_A, LD_A_N, TODO,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
 	LD_D_B, LD_D_C, LD_D_D, LD_D_E, LD_D_H, LD_D_L, LD_D_mHL, LD_D_A, LD_E_B, LD_E_C, LD_E_D, LD_E_E, LD_E_H, LD_E_L, LD_E_mHL, LD_E_A,
 	LD_H_B, LD_H_C, LD_H_D, LD_H_E, LD_H_H, LD_H_L, LD_H_mHL, LD_H_A, LD_L_B, LD_L_C, LD_L_D, LD_L_E, LD_L_H, LD_L_L, LD_L_mHL, LD_L_A,
@@ -1058,4 +1058,138 @@ func CP_N() {
 	fc = r < 0
 	cycles += 8
 	pc += 2
+}
+
+func INC_B() {
+	b++
+	fz = b == 0
+	fn = false
+	fh = b&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_C() {
+	c++
+	fz = c == 0
+	fn = false
+	fh = c&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_D() {
+	d++
+	fz = d == 0
+	fn = false
+	fh = d&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_E() {
+	e++
+	fz = e == 0
+	fn = false
+	fh = e&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_H() {
+	h++
+	fz = h == 0
+	fn = false
+	fh = h&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_L() {
+	l++
+	fz = l == 0
+	fn = false
+	fh = l&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+func INC_mHL() {
+	m := uint16(b)<<8 + uint16(c)
+	n := read(m) + 1
+	write(m, n)
+	fz = n == 0
+	fn = false
+	fh = n&0x0f == 0
+	cycles += 12
+	pc += 1
+}
+func INC_A() {
+	a++
+	fz = a == 0
+	fn = false
+	fh = a&0x0f == 0
+	cycles += 4
+	pc += 1
+}
+
+func DEC_B() {
+	b--
+	fz = b == 0
+	fn = true
+	fh = b&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_C() {
+	c--
+	fz = c == 0
+	fn = true
+	fh = c&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_D() {
+	d--
+	fz = d == 0
+	fn = true
+	fh = d&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_E() {
+	e--
+	fz = e == 0
+	fn = true
+	fh = e&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_H() {
+	h--
+	fz = h == 0
+	fn = true
+	fh = h&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_L() {
+	l--
+	fz = l == 0
+	fn = true
+	fh = l&0x0f == 0x0f
+	cycles += 4
+	pc += 1
+}
+func DEC_mHL() {
+	m := uint16(b)<<8 + uint16(c)
+	n := read(m) - 1
+	write(m, n)
+	fz = n == 0
+	fn = true
+	fh = n&0x0f == 0x0f
+	cycles += 12
+	pc += 1
+}
+func DEC_A() {
+	a--
+	fz = a == 0
+	fn = true
+	fh = a&0x0f == 0x0f
+	cycles += 4
+	pc += 1
 }

@@ -3,10 +3,12 @@ package main
 import "fmt"
 
 func main() {
-	var a uint8 = 10
-	var b uint8 = 22
+	var a uint8 = 16
+	var b uint8 = 1
 
-	a = a + ^b + 1
-	fmt.Printf("v=%d\n", a)
+	var c = uint8(a) - b
+	var h = (uint8(a)^b^c)&0x10 > 0
+
+	fmt.Printf("v=%t\n", h)
 
 }

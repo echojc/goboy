@@ -86,12 +86,12 @@ var opcode [0x255]func() = [0x255]func(){
 	LD_mHL_B, LD_mHL_C, LD_mHL_D, LD_mHL_E, LD_mHL_H, LD_mHL_L, HALT, LD_mHL_A, LD_A_B, LD_A_C, LD_A_D, LD_A_E, LD_A_H, LD_A_L, LD_A_mHL, LD_A_A,
 	ADD_A_B, ADD_A_C, ADD_A_D, ADD_A_E, ADD_A_H, ADD_A_L, ADD_A_mHL, ADD_A_A, ADC_A_B, ADC_A_C, ADC_A_D, ADC_A_E, ADC_A_H, ADC_A_L, ADC_A_mHL, ADC_A_A,
 	SUB_A_B, SUB_A_C, SUB_A_D, SUB_A_E, SUB_A_H, SUB_A_L, SUB_A_mHL, SUB_A_A, SBC_A_B, SBC_A_C, SBC_A_D, SBC_A_E, SBC_A_H, SBC_A_L, SBC_A_mHL, SBC_A_A,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
+	AND_B, AND_C, AND_D, AND_E, AND_H, AND_L, AND_mHL, AND_A, XOR_B, XOR_C, XOR_D, XOR_E, XOR_H, XOR_L, XOR_mHL, XOR_A,
+	OR_B, OR_C, OR_D, OR_E, OR_H, OR_L, OR_mHL, OR_A, CP_B, CP_C, CP_D, CP_E, CP_H, CP_L, CP_mHL, CP_A,
 	TODO, POP_BC, TODO, TODO, TODO, PUSH_BC, ADD_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, ADC_A_N, TODO,
 	TODO, POP_DE, TODO, TODO, TODO, PUSH_DE, SUB_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, SBC_A_N, TODO,
-	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, TODO, TODO, TODO, TODO, LD_mNN_A, TODO, TODO, TODO, TODO, TODO,
-	LDH_A_mN, POP_AF, LDH_A_mC, TODO, TODO, PUSH_AF, TODO, TODO, LD_HL_SP_N, LD_SP_HL, LD_A_mNN, TODO, TODO, TODO, TODO, TODO,
+	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, TODO, TODO, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
+	LDH_A_mN, POP_AF, LDH_A_mC, TODO, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_N, LD_SP_HL, LD_A_mNN, TODO, TODO, TODO, CP_N, TODO,
 }
 
 func TODO() { panic("unknown opcode!") }
@@ -721,6 +721,341 @@ func SBC_A_N() {
 	fh = (a^n^t)&0x10 > 0
 	fc = r < 0
 	a = t
+	cycles += 8
+	pc += 2
+}
+
+func AND_B() {
+	a = a & b
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_C() {
+	a = a & c
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_D() {
+	a = a & d
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_E() {
+	a = a & e
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_H() {
+	a = a & h
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_L() {
+	a = a & l
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_mHL() {
+	a = a & read(uint16(h)<<8+uint16(l))
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 8
+	pc += 1
+}
+func AND_A() {
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func AND_N() {
+	a = a & read(pc+1)
+	fz = a == 0
+	fn = false
+	fh = true
+	fc = false
+	cycles += 8
+	pc += 2
+}
+
+func XOR_B() {
+	a = a ^ b
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_C() {
+	a = a ^ c
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_D() {
+	a = a ^ d
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_E() {
+	a = a ^ e
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_H() {
+	a = a ^ h
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_L() {
+	a = a ^ l
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_mHL() {
+	a = a ^ read(uint16(h)<<8+uint16(l))
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 8
+	pc += 1
+}
+func XOR_A() {
+	a = 0
+	fz = true
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func XOR_N() {
+	a = a ^ read(pc+1)
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 8
+	pc += 2
+}
+
+func OR_B() {
+	a = a | b
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_C() {
+	a = a | c
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_D() {
+	a = a | d
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_E() {
+	a = a | e
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_H() {
+	a = a | h
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_L() {
+	a = a | l
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_mHL() {
+	a = a | read(uint16(h)<<8+uint16(l))
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 8
+	pc += 1
+}
+func OR_A() {
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func OR_N() {
+	a = a | read(pc+1)
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = false
+	cycles += 8
+	pc += 2
+}
+
+func CP_B() {
+	r := int16(a) + ^int16(b) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^b^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_C() {
+	r := int16(a) + ^int16(c) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^c^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_D() {
+	r := int16(a) + ^int16(d) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^d^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_E() {
+	r := int16(a) + ^int16(e) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^e^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_H() {
+	r := int16(a) + ^int16(h) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^h^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_L() {
+	r := int16(a) + ^int16(l) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^l^t)&0x10 > 0
+	fc = r < 0
+	cycles += 4
+	pc += 1
+}
+func CP_mHL() {
+	mhl := read(uint16(h)<<8 + uint16(l))
+	r := int16(a) + ^int16(mhl) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^mhl^t)&0x10 > 0
+	fc = r < 0
+	cycles += 8
+	pc += 1
+}
+func CP_A() {
+	fz = true
+	fn = true
+	fh = false
+	fc = false
+	cycles += 4
+	pc += 1
+}
+func CP_N() {
+	n := read(pc + 1)
+	r := int16(a) + ^int16(n) + 1
+	t := uint8(r)
+	fz = t == 0
+	fn = true
+	fh = (a^n^t)&0x10 > 0
+	fc = r < 0
 	cycles += 8
 	pc += 2
 }

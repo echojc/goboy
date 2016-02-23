@@ -502,7 +502,7 @@ func ADC_A_N() {
 }
 
 func SUB_A_B() {
-	r := int16(a) + ^int16(b) + 1
+	r := int16(a) - int16(b)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -513,7 +513,7 @@ func SUB_A_B() {
 	pc += 1
 }
 func SUB_A_C() {
-	r := int16(a) + ^int16(c) + 1
+	r := int16(a) - int16(c)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -524,7 +524,7 @@ func SUB_A_C() {
 	pc += 1
 }
 func SUB_A_D() {
-	r := int16(a) + ^int16(d) + 1
+	r := int16(a) - int16(d)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -535,7 +535,7 @@ func SUB_A_D() {
 	pc += 1
 }
 func SUB_A_E() {
-	r := int16(a) + ^int16(e) + 1
+	r := int16(a) - int16(e)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -546,7 +546,7 @@ func SUB_A_E() {
 	pc += 1
 }
 func SUB_A_H() {
-	r := int16(a) + ^int16(h) + 1
+	r := int16(a) - int16(h)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -557,7 +557,7 @@ func SUB_A_H() {
 	pc += 1
 }
 func SUB_A_L() {
-	r := int16(a) + ^int16(l) + 1
+	r := int16(a) - int16(l)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -569,7 +569,7 @@ func SUB_A_L() {
 }
 func SUB_A_mHL() {
 	mhl := read(uint16(h)<<8 + uint16(l))
-	r := int16(a) + ^int16(mhl) + 1
+	r := int16(a) - int16(mhl)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -590,7 +590,7 @@ func SUB_A_A() {
 }
 func SUB_A_N() {
 	n := read(pc + 1)
-	r := int16(a) + ^int16(n) + 1
+	r := int16(a) - int16(n)
 	t := uint8(r)
 	fz = t == 0
 	fn = true
@@ -602,9 +602,9 @@ func SUB_A_N() {
 }
 
 func SBC_A_B() {
-	r := int16(a) + ^int16(b)
+	r := int16(a) - int16(b)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -616,9 +616,9 @@ func SBC_A_B() {
 	pc += 1
 }
 func SBC_A_C() {
-	r := int16(a) + ^int16(c)
+	r := int16(a) - int16(c)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -630,9 +630,9 @@ func SBC_A_C() {
 	pc += 1
 }
 func SBC_A_D() {
-	r := int16(a) + ^int16(d)
+	r := int16(a) - int16(d)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -644,9 +644,9 @@ func SBC_A_D() {
 	pc += 1
 }
 func SBC_A_E() {
-	r := int16(a) + ^int16(e)
+	r := int16(a) - int16(e)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -658,9 +658,9 @@ func SBC_A_E() {
 	pc += 1
 }
 func SBC_A_H() {
-	r := int16(a) + ^int16(h)
+	r := int16(a) - int16(h)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -672,9 +672,9 @@ func SBC_A_H() {
 	pc += 1
 }
 func SBC_A_L() {
-	r := int16(a) + ^int16(l)
+	r := int16(a) - int16(l)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -687,9 +687,9 @@ func SBC_A_L() {
 }
 func SBC_A_mHL() {
 	mhl := read(uint16(h)<<8 + uint16(l))
-	r := int16(a) + ^int16(mhl)
+	r := int16(a) - int16(mhl)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0
@@ -711,9 +711,9 @@ func SBC_A_A() {
 }
 func SBC_A_N() {
 	n := read(pc + 1)
-	r := int16(a) + ^int16(n)
+	r := int16(a) - int16(n)
 	if !fc {
-		r += 1
+		r -= 1
 	}
 	t := uint8(r)
 	fz = t == 0

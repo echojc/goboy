@@ -14,6 +14,10 @@ var halted bool
 
 var cycles int32
 
+func Step() {
+	opcode[read(pc)]()
+}
+
 func read(addr uint16) uint8 {
 	switch {
 	case addr < 0x4000:
@@ -71,10 +75,6 @@ func write(addr uint16, v uint8) {
 	}
 }
 
-func Step() {
-	opcode[read(pc)]()
-}
-
 var opcode [0x255]func() = [0x255]func(){
 	NOP, LD_BC_NN, LD_mBC_A, TODO, TODO, TODO, LD_B_N, TODO, LD_mNN_SP, TODO, LD_A_mBC, TODO, TODO, TODO, LD_C_N, TODO,
 	TODO, LD_DE_NN, LD_mDE_A, TODO, TODO, TODO, LD_D_N, TODO, TODO, TODO, LD_A_mDE, TODO, TODO, TODO, LD_E_N, TODO,
@@ -104,7 +104,7 @@ func LD_DE_NN()   { d = read(pc + 2); e = read(pc + 1); cycles += 12; pc += 3 }
 func LD_HL_NN()   { h = read(pc + 2); l = read(pc + 1); cycles += 12; pc += 3 }
 func LD_SP_NN()   { sp = uint16(read(pc+2))<<8 + uint16(read(pc+1)); cycles += 12; pc += 3 }
 func LD_SP_HL()   { sp = uint16(h)<<8 + uint16(l); cycles += 8; pc += 1 }
-func LD_HL_SP_N() { /* TODO */ }
+func LD_HL_SP_N() { panic("todo") }
 
 func LD_mBC_A() { write(uint16(b)<<8+uint16(c), a); cycles += 8; pc += 1 }
 func LD_mDE_A() { write(uint16(d)<<8+uint16(e), a); cycles += 8; pc += 1 }

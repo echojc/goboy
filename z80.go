@@ -90,7 +90,7 @@ var opcode [0x100]func() = [0x100]func(){
 	OR_B, OR_C, OR_D, OR_E, OR_H, OR_L, OR_mHL, OR_A, CP_B, CP_C, CP_D, CP_E, CP_H, CP_L, CP_mHL, CP_A,
 	TODO, POP_BC, TODO, TODO, TODO, PUSH_BC, ADD_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, ADC_A_N, TODO,
 	TODO, POP_DE, TODO, TODO, TODO, PUSH_DE, SUB_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, SBC_A_N, TODO,
-	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, TODO, TODO, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
+	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, ADD_SP_N, TODO, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
 	LDH_A_mN, POP_AF, LDH_A_mC, TODO, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_N, LD_SP_HL, LD_A_mNN, TODO, TODO, TODO, CP_N, TODO,
 }
 
@@ -99,12 +99,11 @@ func TODO() { panic("unknown opcode!") }
 func NOP()  { cycles += 4; pc += 1 }
 func HALT() { halted = true; cycles += 4; pc += 1 }
 
-func LD_BC_NN()   { b = read(pc + 2); c = read(pc + 1); cycles += 12; pc += 3 }
-func LD_DE_NN()   { d = read(pc + 2); e = read(pc + 1); cycles += 12; pc += 3 }
-func LD_HL_NN()   { h = read(pc + 2); l = read(pc + 1); cycles += 12; pc += 3 }
-func LD_SP_NN()   { sp = uint16(read(pc+2))<<8 + uint16(read(pc+1)); cycles += 12; pc += 3 }
-func LD_SP_HL()   { sp = uint16(h)<<8 + uint16(l); cycles += 8; pc += 1 }
-func LD_HL_SP_N() { panic("todo") }
+func LD_BC_NN() { b = read(pc + 2); c = read(pc + 1); cycles += 12; pc += 3 }
+func LD_DE_NN() { d = read(pc + 2); e = read(pc + 1); cycles += 12; pc += 3 }
+func LD_HL_NN() { h = read(pc + 2); l = read(pc + 1); cycles += 12; pc += 3 }
+func LD_SP_NN() { sp = uint16(read(pc+2))<<8 + uint16(read(pc+1)); cycles += 12; pc += 3 }
+func LD_SP_HL() { sp = uint16(h)<<8 + uint16(l); cycles += 8; pc += 1 }
 
 func LD_mBC_A() { write(uint16(b)<<8+uint16(c), a); cycles += 8; pc += 1 }
 func LD_mDE_A() { write(uint16(d)<<8+uint16(e), a); cycles += 8; pc += 1 }
@@ -1243,4 +1242,30 @@ func ADD_HL_SP() {
 	l = uint8(r)
 	cycles += 8
 	pc += 1
+}
+
+func ADD_SP_N() {
+	wsp := int32(sp)
+	wn := int32(read(pc + 1))
+	r := wsp + wn
+	fz = false
+	fn = false
+	fh = (wsp^wn^r)&0x10 > 0
+	fc = (wsp^wn^r)&0x100 > 0
+	sp = uint16(r)
+	cycles += 16
+	pc += 2
+}
+func LD_HL_SP_N() {
+	wsp := int32(sp)
+	wn := int32(read(pc + 1))
+	r := wsp + wn
+	fz = false
+	fn = false
+	fh = (wsp^wn^r)&0x10 > 0
+	fc = (wsp^wn^r)&0x100 > 0
+	h = uint8(r >> 8)
+	l = uint8(r)
+	cycles += 12
+	pc += 2
 }

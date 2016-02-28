@@ -3,12 +3,11 @@ package main
 import "fmt"
 
 func main() {
-	var a uint8 = 16
-	var b uint8 = 1
+	var sp uint16 = 0x12f4
+	var n uint8 = 0x10
 
-	var c = uint8(a) - b
-	var h = (uint8(a)^b^c)&0x10 > 0
+	c := int32(sp)
+	d := int32(n)
 
-	fmt.Printf("v=%t\n", h)
-
+	fmt.Printf("v=0x%08x\n", c^d^(c+d))
 }

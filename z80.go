@@ -78,8 +78,8 @@ func write(addr uint16, v uint8) {
 }
 
 var opcode [0x100]func() = [0x100]func(){
-	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, TODO,
-	STOP, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, TODO, TODO, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, TODO,
+	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, RLCA, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, RRCA,
+	STOP, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, RLA, TODO, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, RRA,
 	TODO, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, DAA, TODO, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, CPL,
 	TODO, LD_SP_NN, LDD_mHL_A, INC_SP, INC_mHL, DEC_mHL, LD_mHL_N, SCF, TODO, ADD_HL_SP, LDD_A_mHL, DEC_SP, INC_A, DEC_A, LD_A_N, CCF,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
@@ -1363,3 +1363,48 @@ func DAA() {
 func CPL() { a = ^a; fn = true; fh = true; cycles += 4; pc += 1 }
 func CCF() { fc = !fc; fn = false; fh = false; cycles += 4; pc += 1 }
 func SCF() { fc = true; fn = false; fh = false; cycles += 4; pc += 1 }
+
+func RLCA() {
+	a = ((a << 1) & 0xfe) | ((a >> 7) & 0x01)
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = (a & 0x01) > 0
+	cycles += 4
+	pc += 1
+}
+func RLA() {
+	b7 := a & 0x80
+	a = ((a << 1) & 0xfe)
+	if fc {
+		a |= 0x01
+	}
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = b7 > 0
+	cycles += 4
+	pc += 1
+}
+func RRCA() {
+	a = ((a >> 1) & 0x7f) | ((a << 7) & 0x80)
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = (a & 0x80) > 0
+	cycles += 4
+	pc += 1
+}
+func RRA() {
+	b0 := a & 0x01
+	a = ((a >> 1) & 0x7f)
+	if fc {
+		a |= 0x80
+	}
+	fz = a == 0
+	fn = false
+	fh = false
+	fc = b0 > 0
+	cycles += 4
+	pc += 1
+}

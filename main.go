@@ -3,11 +3,15 @@ package main
 import "fmt"
 
 func main() {
-	var sp uint16 = 0x12f4
-	var n uint8 = 0x10
+	write(0xc000, 0xe8)
+	write(0xc001, 0x3a)
+	write(0xc002, 0xe8)
+	write(0xc003, 0xff)
 
-	c := int32(sp)
-	d := int32(n)
-
-	fmt.Printf("v=0x%08x\n", c^d^(c+d))
+	var addr uint16 = 0xc000
+	for addr < 0xc004 {
+		raw, pretty, length := Disassemble(addr)
+		fmt.Printf("% -12s%s\n", raw, pretty)
+		addr += length
+	}
 }

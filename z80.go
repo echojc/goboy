@@ -75,7 +75,7 @@ func write(addr uint16, v uint8) {
 	}
 }
 
-var opcode [0x255]func() = [0x255]func(){
+var opcode [0x100]func() = [0x100]func(){
 	NOP, LD_BC_NN, LD_mBC_A, TODO, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, TODO, LD_A_mBC, TODO, INC_C, DEC_C, LD_C_N, TODO,
 	TODO, LD_DE_NN, LD_mDE_A, TODO, INC_D, DEC_D, LD_D_N, TODO, TODO, TODO, LD_A_mDE, TODO, INC_E, DEC_E, LD_E_N, TODO,
 	TODO, LD_HL_NN, LDI_mHL_A, TODO, INC_H, DEC_H, LD_H_N, TODO, TODO, TODO, LDI_A_mHL, TODO, INC_L, DEC_L, LD_L_N, TODO,
@@ -276,7 +276,7 @@ func ADD_A_B() {
 	fz = t == 0
 	fn = false
 	fh = (a^b^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -287,7 +287,7 @@ func ADD_A_C() {
 	fz = t == 0
 	fn = false
 	fh = (a^c^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -298,7 +298,7 @@ func ADD_A_D() {
 	fz = t == 0
 	fn = false
 	fh = (a^d^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -309,7 +309,7 @@ func ADD_A_E() {
 	fz = t == 0
 	fn = false
 	fh = (a^e^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -320,7 +320,7 @@ func ADD_A_H() {
 	fz = t == 0
 	fn = false
 	fh = (a^h^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -331,7 +331,7 @@ func ADD_A_L() {
 	fz = t == 0
 	fn = false
 	fh = (a^l^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -343,7 +343,7 @@ func ADD_A_mHL() {
 	fz = t == 0
 	fn = false
 	fh = (a^mhl^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 8
 	pc += 1
@@ -354,7 +354,7 @@ func ADD_A_A() {
 	fz = t == 0
 	fn = false
 	fh = (a^a^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -366,7 +366,7 @@ func ADD_A_N() {
 	fz = t == 0
 	fn = false
 	fh = (a^n^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 8
 	pc += 2
@@ -381,7 +381,7 @@ func ADC_A_B() {
 	fz = t == 0
 	fn = false
 	fh = (a^b^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -395,7 +395,7 @@ func ADC_A_C() {
 	fz = t == 0
 	fn = false
 	fh = (a^c^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -409,7 +409,7 @@ func ADC_A_D() {
 	fz = t == 0
 	fn = false
 	fh = (a^d^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -423,7 +423,7 @@ func ADC_A_E() {
 	fz = t == 0
 	fn = false
 	fh = (a^e^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -437,7 +437,7 @@ func ADC_A_H() {
 	fz = t == 0
 	fn = false
 	fh = (a^h^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -451,7 +451,7 @@ func ADC_A_L() {
 	fz = t == 0
 	fn = false
 	fh = (a^l^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -466,7 +466,7 @@ func ADC_A_mHL() {
 	fz = t == 0
 	fn = false
 	fh = (a^mhl^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 8
 	pc += 1
@@ -480,7 +480,7 @@ func ADC_A_A() {
 	fz = t == 0
 	fn = false
 	fh = (a^a^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 4
 	pc += 1
@@ -495,7 +495,7 @@ func ADC_A_N() {
 	fz = t == 0
 	fn = false
 	fh = (a^n^t)&0x10 > 0
-	fc = r > 255
+	fc = r > 0xff
 	a = t
 	cycles += 8
 	pc += 2

@@ -76,10 +76,10 @@ func write(addr uint16, v uint8) {
 }
 
 var opcode [0x100]func() = [0x100]func(){
-	NOP, LD_BC_NN, LD_mBC_A, TODO, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, TODO, LD_A_mBC, TODO, INC_C, DEC_C, LD_C_N, TODO,
-	TODO, LD_DE_NN, LD_mDE_A, TODO, INC_D, DEC_D, LD_D_N, TODO, TODO, TODO, LD_A_mDE, TODO, INC_E, DEC_E, LD_E_N, TODO,
-	TODO, LD_HL_NN, LDI_mHL_A, TODO, INC_H, DEC_H, LD_H_N, TODO, TODO, TODO, LDI_A_mHL, TODO, INC_L, DEC_L, LD_L_N, TODO,
-	TODO, LD_SP_NN, LDD_mHL_A, TODO, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, TODO, LDD_A_mHL, TODO, INC_A, DEC_A, LD_A_N, TODO,
+	NOP, LD_BC_NN, LD_mBC_A, TODO, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, TODO, INC_C, DEC_C, LD_C_N, TODO,
+	TODO, LD_DE_NN, LD_mDE_A, TODO, INC_D, DEC_D, LD_D_N, TODO, TODO, ADD_HL_DE, LD_A_mDE, TODO, INC_E, DEC_E, LD_E_N, TODO,
+	TODO, LD_HL_NN, LDI_mHL_A, TODO, INC_H, DEC_H, LD_H_N, TODO, TODO, ADD_HL_HL, LDI_A_mHL, TODO, INC_L, DEC_L, LD_L_N, TODO,
+	TODO, LD_SP_NN, LDD_mHL_A, TODO, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, ADD_HL_SP, LDD_A_mHL, TODO, INC_A, DEC_A, LD_A_N, TODO,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
 	LD_D_B, LD_D_C, LD_D_D, LD_D_E, LD_D_H, LD_D_L, LD_D_mHL, LD_D_A, LD_E_B, LD_E_C, LD_E_D, LD_E_E, LD_E_H, LD_E_L, LD_E_mHL, LD_E_A,
 	LD_H_B, LD_H_C, LD_H_D, LD_H_E, LD_H_H, LD_H_L, LD_H_mHL, LD_H_A, LD_L_B, LD_L_C, LD_L_D, LD_L_E, LD_L_H, LD_L_L, LD_L_mHL, LD_L_A,
@@ -1195,5 +1195,52 @@ func DEC_A() {
 	fn = true
 	fh = a&0x0f == 0x0f
 	cycles += 4
+	pc += 1
+}
+
+func ADD_HL_BC() {
+	bc := int32(b)<<8 + int32(c)
+	hl := int32(h)<<8 + int32(l)
+	r := bc + hl
+	fn = false
+	fh = (bc^hl^r)&0x1000 > 0
+	fc = r > 0xffff
+	h = uint8(r >> 8)
+	l = uint8(r)
+	cycles += 8
+	pc += 1
+}
+func ADD_HL_DE() {
+	de := int32(d)<<8 + int32(e)
+	hl := int32(h)<<8 + int32(l)
+	r := de + hl
+	fn = false
+	fh = (de^hl^r)&0x1000 > 0
+	fc = r > 0xffff
+	h = uint8(r >> 8)
+	l = uint8(r)
+	cycles += 8
+	pc += 1
+}
+func ADD_HL_HL() {
+	hl := int32(h)<<8 + int32(l)
+	r := hl + hl
+	fn = false
+	fh = r&0x1000 > 0
+	fc = r > 0xffff
+	h = uint8(r >> 8)
+	l = uint8(r)
+	cycles += 8
+	pc += 1
+}
+func ADD_HL_SP() {
+	hl := int32(h)<<8 + int32(l)
+	r := int32(sp) + hl
+	fn = false
+	fh = (int32(sp)^hl^r)&0x1000 > 0
+	fc = r > 0xffff
+	h = uint8(r >> 8)
+	l = uint8(r)
+	cycles += 8
 	pc += 1
 }

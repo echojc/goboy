@@ -90,10 +90,10 @@ var opcode [0x100]func() = [0x100]func(){
 	SUB_A_B, SUB_A_C, SUB_A_D, SUB_A_E, SUB_A_H, SUB_A_L, SUB_A_mHL, SUB_A_A, SBC_A_B, SBC_A_C, SBC_A_D, SBC_A_E, SBC_A_H, SBC_A_L, SBC_A_mHL, SBC_A_A,
 	AND_B, AND_C, AND_D, AND_E, AND_H, AND_L, AND_mHL, AND_A, XOR_B, XOR_C, XOR_D, XOR_E, XOR_H, XOR_L, XOR_mHL, XOR_A,
 	OR_B, OR_C, OR_D, OR_E, OR_H, OR_L, OR_mHL, OR_A, CP_B, CP_C, CP_D, CP_E, CP_H, CP_L, CP_mHL, CP_A,
-	TODO, POP_BC, JP_NZ_NN, JP_NN, CALL_NZ_NN, PUSH_BC, ADD_A_N, TODO, TODO, TODO, JP_Z_NN, TODO, CALL_Z_NN, CALL_NN, ADC_A_N, TODO,
-	TODO, POP_DE, JP_NC_NN, TODO, CALL_NC_NN, PUSH_DE, SUB_A_N, TODO, TODO, TODO, JP_C_NN, TODO, CALL_C_NN, TODO, SBC_A_N, TODO,
-	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, ADD_SP_sN, JP_mHL, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
-	LDH_A_mN, POP_AF, LDH_A_mC, DI, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_sN, LD_SP_HL, LD_A_mNN, EI, TODO, TODO, CP_N, TODO,
+	TODO, POP_BC, JP_NZ_NN, JP_NN, CALL_NZ_NN, PUSH_BC, ADD_A_N, RST_00h, TODO, TODO, JP_Z_NN, TODO, CALL_Z_NN, CALL_NN, ADC_A_N, RST_08h,
+	TODO, POP_DE, JP_NC_NN, TODO, CALL_NC_NN, PUSH_DE, SUB_A_N, RST_10h, TODO, TODO, JP_C_NN, TODO, CALL_C_NN, TODO, SBC_A_N, RST_18h,
+	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, RST_20h, ADD_SP_sN, JP_mHL, LD_mNN_A, TODO, TODO, TODO, XOR_N, RST_28h,
+	LDH_A_mN, POP_AF, LDH_A_mC, DI, TODO, PUSH_AF, OR_N, RST_30h, LD_HL_SP_sN, LD_SP_HL, LD_A_mNN, EI, TODO, TODO, CP_N, RST_38h,
 }
 
 func TODO() { panic("unknown opcode!") }
@@ -1542,3 +1542,12 @@ func CALL_C_NN() {
 	}
 	cycles += 12
 }
+
+func RST_00h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0000; cycles += 32 }
+func RST_08h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0008; cycles += 32 }
+func RST_10h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0010; cycles += 32 }
+func RST_18h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0018; cycles += 32 }
+func RST_20h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0020; cycles += 32 }
+func RST_28h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0028; cycles += 32 }
+func RST_30h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0030; cycles += 32 }
+func RST_38h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0038; cycles += 32 }

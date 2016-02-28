@@ -90,8 +90,8 @@ var opcode [0x100]func() = [0x100]func(){
 	SUB_A_B, SUB_A_C, SUB_A_D, SUB_A_E, SUB_A_H, SUB_A_L, SUB_A_mHL, SUB_A_A, SBC_A_B, SBC_A_C, SBC_A_D, SBC_A_E, SBC_A_H, SBC_A_L, SBC_A_mHL, SBC_A_A,
 	AND_B, AND_C, AND_D, AND_E, AND_H, AND_L, AND_mHL, AND_A, XOR_B, XOR_C, XOR_D, XOR_E, XOR_H, XOR_L, XOR_mHL, XOR_A,
 	OR_B, OR_C, OR_D, OR_E, OR_H, OR_L, OR_mHL, OR_A, CP_B, CP_C, CP_D, CP_E, CP_H, CP_L, CP_mHL, CP_A,
-	TODO, POP_BC, JP_NZ_NN, JP_NN, TODO, PUSH_BC, ADD_A_N, TODO, TODO, TODO, JP_Z_NN, TODO, TODO, TODO, ADC_A_N, TODO,
-	TODO, POP_DE, JP_NC_NN, TODO, TODO, PUSH_DE, SUB_A_N, TODO, TODO, TODO, JP_C_NN, TODO, TODO, TODO, SBC_A_N, TODO,
+	TODO, POP_BC, JP_NZ_NN, JP_NN, CALL_NZ_NN, PUSH_BC, ADD_A_N, TODO, TODO, TODO, JP_Z_NN, TODO, CALL_Z_NN, CALL_NN, ADC_A_N, TODO,
+	TODO, POP_DE, JP_NC_NN, TODO, CALL_NC_NN, PUSH_DE, SUB_A_N, TODO, TODO, TODO, JP_C_NN, TODO, CALL_C_NN, TODO, SBC_A_N, TODO,
 	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, ADD_SP_sN, JP_mHL, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
 	LDH_A_mN, POP_AF, LDH_A_mC, DI, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_sN, LD_SP_HL, LD_A_mNN, EI, TODO, TODO, CP_N, TODO,
 }
@@ -1484,4 +1484,61 @@ func JR_C_sN() {
 		pc += 2
 	}
 	cycles += 8
+}
+
+func CALL_NN() {
+	nextPc := pc + 3
+	write(sp-1, uint8(nextPc>>8))
+	write(sp-2, uint8(nextPc))
+	sp -= 2
+	pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	cycles += 12
+}
+func CALL_NZ_NN() {
+	if !fz {
+		nextPc := pc + 3
+		write(sp-1, uint8(nextPc>>8))
+		write(sp-2, uint8(nextPc))
+		sp -= 2
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func CALL_Z_NN() {
+	if fz {
+		nextPc := pc + 3
+		write(sp-1, uint8(nextPc>>8))
+		write(sp-2, uint8(nextPc))
+		sp -= 2
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func CALL_NC_NN() {
+	if !fc {
+		nextPc := pc + 3
+		write(sp-1, uint8(nextPc>>8))
+		write(sp-2, uint8(nextPc))
+		sp -= 2
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func CALL_C_NN() {
+	if fc {
+		nextPc := pc + 3
+		write(sp-1, uint8(nextPc>>8))
+		write(sp-2, uint8(nextPc))
+		sp -= 2
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
 }

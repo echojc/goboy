@@ -78,7 +78,7 @@ func write(addr uint16, v uint8) {
 var opcode [0x100]func() = [0x100]func(){
 	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, TODO,
 	TODO, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, TODO, TODO, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, TODO,
-	TODO, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, TODO, TODO, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, TODO,
+	TODO, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, DAA, TODO, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, TODO,
 	TODO, LD_SP_NN, LDD_mHL_A, INC_SP, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, ADD_HL_SP, LDD_A_mHL, DEC_SP, INC_A, DEC_A, LD_A_N, TODO,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
 	LD_D_B, LD_D_C, LD_D_D, LD_D_E, LD_D_H, LD_D_L, LD_D_mHL, LD_D_A, LD_E_B, LD_E_C, LD_E_D, LD_E_E, LD_E_H, LD_E_L, LD_E_mHL, LD_E_A,
@@ -1327,5 +1327,29 @@ func DEC_HL() {
 func DEC_SP() {
 	sp--
 	cycles += 8
+	pc += 1
+}
+
+func DAA() {
+	if fh || (a&0x0f) > 0x09 {
+		if fn {
+			a -= 0x06
+		} else {
+			a += 0x06
+		}
+	}
+	if fc || a > 0x99 {
+		fc = true
+		if fn {
+			a -= 0x60
+		} else {
+			a += 0x60
+		}
+	} else {
+		fc = false
+	}
+	fh = false
+	fz = a == 0
+	cycles += 4
 	pc += 1
 }

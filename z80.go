@@ -603,7 +603,7 @@ func SUB_A_N() {
 
 func SBC_A_B() {
 	r := int16(a) - int16(b)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -617,7 +617,7 @@ func SBC_A_B() {
 }
 func SBC_A_C() {
 	r := int16(a) - int16(c)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -631,7 +631,7 @@ func SBC_A_C() {
 }
 func SBC_A_D() {
 	r := int16(a) - int16(d)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -645,7 +645,7 @@ func SBC_A_D() {
 }
 func SBC_A_E() {
 	r := int16(a) - int16(e)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -659,7 +659,7 @@ func SBC_A_E() {
 }
 func SBC_A_H() {
 	r := int16(a) - int16(h)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -673,7 +673,7 @@ func SBC_A_H() {
 }
 func SBC_A_L() {
 	r := int16(a) - int16(l)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -688,7 +688,7 @@ func SBC_A_L() {
 func SBC_A_mHL() {
 	mhl := read(uint16(h)<<8 + uint16(l))
 	r := int16(a) - int16(mhl)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)
@@ -705,14 +705,18 @@ func SBC_A_A() {
 	fn = true
 	fh = true
 	fc = true
-	a = 255
+	if fc {
+		a = 0xff
+	} else {
+		a = 0
+	}
 	cycles += 4
 	pc += 1
 }
 func SBC_A_N() {
 	n := read(pc + 1)
 	r := int16(a) - int16(n)
-	if !fc {
+	if fc {
 		r -= 1
 	}
 	t := uint8(r)

@@ -76,10 +76,10 @@ func write(addr uint16, v uint8) {
 }
 
 var opcode [0x100]func() = [0x100]func(){
-	NOP, LD_BC_NN, LD_mBC_A, TODO, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, TODO, INC_C, DEC_C, LD_C_N, TODO,
-	TODO, LD_DE_NN, LD_mDE_A, TODO, INC_D, DEC_D, LD_D_N, TODO, TODO, ADD_HL_DE, LD_A_mDE, TODO, INC_E, DEC_E, LD_E_N, TODO,
-	TODO, LD_HL_NN, LDI_mHL_A, TODO, INC_H, DEC_H, LD_H_N, TODO, TODO, ADD_HL_HL, LDI_A_mHL, TODO, INC_L, DEC_L, LD_L_N, TODO,
-	TODO, LD_SP_NN, LDD_mHL_A, TODO, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, ADD_HL_SP, LDD_A_mHL, TODO, INC_A, DEC_A, LD_A_N, TODO,
+	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, TODO, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, TODO,
+	TODO, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, TODO, TODO, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, TODO,
+	TODO, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, TODO, TODO, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, TODO,
+	TODO, LD_SP_NN, LDD_mHL_A, INC_SP, INC_mHL, DEC_mHL, LD_mHL_N, TODO, TODO, ADD_HL_SP, LDD_A_mHL, DEC_SP, INC_A, DEC_A, LD_A_N, TODO,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
 	LD_D_B, LD_D_C, LD_D_D, LD_D_E, LD_D_H, LD_D_L, LD_D_mHL, LD_D_A, LD_E_B, LD_E_C, LD_E_D, LD_E_E, LD_E_H, LD_E_L, LD_E_mHL, LD_E_A,
 	LD_H_B, LD_H_C, LD_H_D, LD_H_E, LD_H_H, LD_H_L, LD_H_mHL, LD_H_A, LD_L_B, LD_L_C, LD_L_D, LD_L_E, LD_L_H, LD_L_L, LD_L_mHL, LD_L_A,
@@ -1268,4 +1268,64 @@ func LD_HL_SP_N() {
 	l = uint8(r)
 	cycles += 12
 	pc += 2
+}
+
+func INC_BC() {
+	c++
+	if c == 0 {
+		b++
+	}
+	cycles += 8
+	pc += 1
+}
+func INC_DE() {
+	e++
+	if e == 0 {
+		d++
+	}
+	cycles += 8
+	pc += 1
+}
+func INC_HL() {
+	l++
+	if l == 0 {
+		h++
+	}
+	cycles += 8
+	pc += 1
+}
+func INC_SP() {
+	sp++
+	cycles += 8
+	pc += 1
+}
+
+func DEC_BC() {
+	c--
+	if c == 0xff {
+		b--
+	}
+	cycles += 8
+	pc += 1
+}
+func DEC_DE() {
+	e--
+	if e == 0xff {
+		d--
+	}
+	cycles += 8
+	pc += 1
+}
+func DEC_HL() {
+	l--
+	if l == 0xff {
+		h--
+	}
+	cycles += 8
+	pc += 1
+}
+func DEC_SP() {
+	sp--
+	cycles += 8
+	pc += 1
 }

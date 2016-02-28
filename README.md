@@ -6,6 +6,7 @@ Game Boy emulator written in Go. I've always wanted to write an emulator.
 
 - http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
 - http://www.z80.info/z80code.htm
+- http://imrannazar.com/Gameboy-Z80-Opcode-Map
 
 ## DAA
 

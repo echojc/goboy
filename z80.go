@@ -79,9 +79,9 @@ func write(addr uint16, v uint8) {
 
 var opcode [0x100]func() = [0x100]func(){
 	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, RLCA, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, RRCA,
-	STOP, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, RLA, TODO, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, RRA,
-	TODO, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, DAA, TODO, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, CPL,
-	TODO, LD_SP_NN, LDD_mHL_A, INC_SP, INC_mHL, DEC_mHL, LD_mHL_N, SCF, TODO, ADD_HL_SP, LDD_A_mHL, DEC_SP, INC_A, DEC_A, LD_A_N, CCF,
+	STOP, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, RLA, JR_sN, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, RRA,
+	JR_NZ_sN, LD_HL_NN, LDI_mHL_A, INC_HL, INC_H, DEC_H, LD_H_N, DAA, JR_Z_sN, ADD_HL_HL, LDI_A_mHL, DEC_HL, INC_L, DEC_L, LD_L_N, CPL,
+	JR_NC_sN, LD_SP_NN, LDD_mHL_A, INC_SP, INC_mHL, DEC_mHL, LD_mHL_N, SCF, JR_C_sN, ADD_HL_SP, LDD_A_mHL, DEC_SP, INC_A, DEC_A, LD_A_N, CCF,
 	LD_B_B, LD_B_C, LD_B_D, LD_B_E, LD_B_H, LD_B_L, LD_B_mHL, LD_B_A, LD_C_B, LD_C_C, LD_C_D, LD_C_E, LD_C_H, LD_C_L, LD_C_mHL, LD_C_A,
 	LD_D_B, LD_D_C, LD_D_D, LD_D_E, LD_D_H, LD_D_L, LD_D_mHL, LD_D_A, LD_E_B, LD_E_C, LD_E_D, LD_E_E, LD_E_H, LD_E_L, LD_E_mHL, LD_E_A,
 	LD_H_B, LD_H_C, LD_H_D, LD_H_E, LD_H_H, LD_H_L, LD_H_mHL, LD_H_A, LD_L_B, LD_L_C, LD_L_D, LD_L_E, LD_L_H, LD_L_L, LD_L_mHL, LD_L_A,
@@ -90,10 +90,10 @@ var opcode [0x100]func() = [0x100]func(){
 	SUB_A_B, SUB_A_C, SUB_A_D, SUB_A_E, SUB_A_H, SUB_A_L, SUB_A_mHL, SUB_A_A, SBC_A_B, SBC_A_C, SBC_A_D, SBC_A_E, SBC_A_H, SBC_A_L, SBC_A_mHL, SBC_A_A,
 	AND_B, AND_C, AND_D, AND_E, AND_H, AND_L, AND_mHL, AND_A, XOR_B, XOR_C, XOR_D, XOR_E, XOR_H, XOR_L, XOR_mHL, XOR_A,
 	OR_B, OR_C, OR_D, OR_E, OR_H, OR_L, OR_mHL, OR_A, CP_B, CP_C, CP_D, CP_E, CP_H, CP_L, CP_mHL, CP_A,
-	TODO, POP_BC, TODO, TODO, TODO, PUSH_BC, ADD_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, ADC_A_N, TODO,
-	TODO, POP_DE, TODO, TODO, TODO, PUSH_DE, SUB_A_N, TODO, TODO, TODO, TODO, TODO, TODO, TODO, SBC_A_N, TODO,
-	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, ADD_SP_N, TODO, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
-	LDH_A_mN, POP_AF, LDH_A_mC, DI, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_N, LD_SP_HL, LD_A_mNN, EI, TODO, TODO, CP_N, TODO,
+	TODO, POP_BC, JP_NZ_NN, JP_NN, TODO, PUSH_BC, ADD_A_N, TODO, TODO, TODO, JP_Z_NN, TODO, TODO, TODO, ADC_A_N, TODO,
+	TODO, POP_DE, JP_NC_NN, TODO, TODO, PUSH_DE, SUB_A_N, TODO, TODO, TODO, JP_C_NN, TODO, TODO, TODO, SBC_A_N, TODO,
+	LDH_mN_A, POP_HL, LDH_mC_A, TODO, TODO, PUSH_HL, AND_N, TODO, ADD_SP_sN, JP_mHL, LD_mNN_A, TODO, TODO, TODO, XOR_N, TODO,
+	LDH_A_mN, POP_AF, LDH_A_mC, DI, TODO, PUSH_AF, OR_N, TODO, LD_HL_SP_sN, LD_SP_HL, LD_A_mNN, EI, TODO, TODO, CP_N, TODO,
 }
 
 func TODO() { panic("unknown opcode!") }
@@ -1250,9 +1250,9 @@ func ADD_HL_SP() {
 	pc += 1
 }
 
-func ADD_SP_N() {
+func ADD_SP_sN() {
 	wsp := int32(sp)
-	wn := int32(read(pc + 1))
+	wn := int32(int8(read(pc + 1)))
 	r := wsp + wn
 	fz = false
 	fn = false
@@ -1262,9 +1262,9 @@ func ADD_SP_N() {
 	cycles += 16
 	pc += 2
 }
-func LD_HL_SP_N() {
+func LD_HL_SP_sN() {
 	wsp := int32(sp)
-	wn := int32(read(pc + 1))
+	wn := int32(int8(read(pc + 1)))
 	r := wsp + wn
 	fz = false
 	fn = false
@@ -1407,4 +1407,81 @@ func RRA() {
 	fc = b0 > 0
 	cycles += 4
 	pc += 1
+}
+
+func JP_NN() {
+	pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	cycles += 12
+}
+func JP_NZ_NN() {
+	if !fz {
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func JP_Z_NN() {
+	if fz {
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func JP_NC_NN() {
+	if !fc {
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func JP_C_NN() {
+	if fc {
+		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+	} else {
+		pc += 3
+	}
+	cycles += 12
+}
+func JP_mHL() {
+	pc = uint16(h)<<8 + uint16(l)
+	cycles += 4
+}
+func JR_sN() {
+	pc = uint16(int32(pc) + int32(int8(read(pc+1))))
+	cycles += 8
+}
+func JR_NZ_sN() {
+	if !fz {
+		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
+	} else {
+		pc += 2
+	}
+	cycles += 8
+}
+func JR_Z_sN() {
+	if fz {
+		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
+	} else {
+		pc += 2
+	}
+	cycles += 8
+}
+func JR_NC_sN() {
+	if !fc {
+		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
+	} else {
+		pc += 2
+	}
+	cycles += 8
+}
+func JR_C_sN() {
+	if fc {
+		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
+	} else {
+		pc += 2
+	}
+	cycles += 8
 }

@@ -1388,7 +1388,7 @@ func CCF() { fc = !fc; fn = false; fh = false; cycles += 4; pc += 1 }
 func SCF() { fc = true; fn = false; fh = false; cycles += 4; pc += 1 }
 
 func RLCA() {
-	a = ((a << 1) & 0xfe) | ((a >> 7) & 0x01)
+	a = (a << 1) | (a >> 7)
 	fz = a == 0
 	fn = false
 	fh = false
@@ -1398,7 +1398,7 @@ func RLCA() {
 }
 func RLA() {
 	b7 := a & 0x80
-	a = ((a << 1) & 0xfe)
+	a <<= 1
 	if fc {
 		a |= 0x01
 	}
@@ -1410,7 +1410,7 @@ func RLA() {
 	pc += 1
 }
 func RRCA() {
-	a = ((a >> 1) & 0x7f) | ((a << 7) & 0x80)
+	a = (a >> 1) | (a << 7)
 	fz = a == 0
 	fn = false
 	fh = false
@@ -1420,7 +1420,7 @@ func RRCA() {
 }
 func RRA() {
 	b0 := a & 0x01
-	a = ((a >> 1) & 0x7f)
+	a >>= 1
 	if fc {
 		a |= 0x80
 	}
@@ -1621,7 +1621,7 @@ func RETI() {
 }
 
 func RLC_B() {
-	b = ((b << 1) & 0xfe) | ((b >> 7) & 0x01)
+	b = (b << 1) | (b >> 7)
 	fz = b == 0
 	fn = false
 	fh = false
@@ -1630,7 +1630,7 @@ func RLC_B() {
 	pc += 2
 }
 func RLC_C() {
-	c = ((c << 1) & 0xfe) | ((c >> 7) & 0x01)
+	c = (c << 1) | (c >> 7)
 	fz = c == 0
 	fn = false
 	fh = false
@@ -1639,7 +1639,7 @@ func RLC_C() {
 	pc += 2
 }
 func RLC_D() {
-	d = ((d << 1) & 0xfe) | ((d >> 7) & 0x01)
+	d = (d << 1) | (d >> 7)
 	fz = d == 0
 	fn = false
 	fh = false
@@ -1648,7 +1648,7 @@ func RLC_D() {
 	pc += 2
 }
 func RLC_E() {
-	e = ((e << 1) & 0xfe) | ((e >> 7) & 0x01)
+	e = (e << 1) | (e >> 7)
 	fz = e == 0
 	fn = false
 	fh = false
@@ -1657,7 +1657,7 @@ func RLC_E() {
 	pc += 2
 }
 func RLC_H() {
-	h = ((h << 1) & 0xfe) | ((h >> 7) & 0x01)
+	h = (h << 1) | (h >> 7)
 	fz = h == 0
 	fn = false
 	fh = false
@@ -1666,7 +1666,7 @@ func RLC_H() {
 	pc += 2
 }
 func RLC_L() {
-	l = ((l << 1) & 0xfe) | ((l >> 7) & 0x01)
+	l = (l << 1) | (l >> 7)
 	fz = l == 0
 	fn = false
 	fh = false
@@ -1677,7 +1677,7 @@ func RLC_L() {
 func RLC_mHL() {
 	m := uint16(h)<<8 + uint16(l)
 	n := read(m)
-	n = ((n << 1) & 0xfe) | ((n >> 7) & 0x01)
+	n = (n << 1) | (n >> 7)
 	write(m, n)
 	fz = n == 0
 	fn = false
@@ -1687,7 +1687,7 @@ func RLC_mHL() {
 	pc += 2
 }
 func RLC_A() {
-	a = ((a << 1) & 0xfe) | ((a >> 7) & 0x01)
+	a = (a << 1) | (a >> 7)
 	fz = a == 0
 	fn = false
 	fh = false
@@ -1697,7 +1697,7 @@ func RLC_A() {
 }
 
 func RRC_B() {
-	b = ((b >> 1) & 0x7f) | ((b << 7) & 0x80)
+	b = (b >> 1) | (b << 7)
 	fz = b == 0
 	fn = false
 	fh = false
@@ -1706,7 +1706,7 @@ func RRC_B() {
 	pc += 2
 }
 func RRC_C() {
-	c = ((c >> 1) & 0x7f) | ((c << 7) & 0x80)
+	c = (c >> 1) | (c << 7)
 	fz = c == 0
 	fn = false
 	fh = false
@@ -1715,7 +1715,7 @@ func RRC_C() {
 	pc += 2
 }
 func RRC_D() {
-	d = ((d >> 1) & 0x7f) | ((d << 7) & 0x80)
+	d = (d >> 1) | (d << 7)
 	fz = d == 0
 	fn = false
 	fh = false
@@ -1724,7 +1724,7 @@ func RRC_D() {
 	pc += 2
 }
 func RRC_E() {
-	e = ((e >> 1) & 0x7f) | ((e << 7) & 0x80)
+	e = (e >> 1) | (e << 7)
 	fz = e == 0
 	fn = false
 	fh = false
@@ -1733,7 +1733,7 @@ func RRC_E() {
 	pc += 2
 }
 func RRC_H() {
-	h = ((h >> 1) & 0x7f) | ((h << 7) & 0x80)
+	h = (h >> 1) | (h << 7)
 	fz = h == 0
 	fn = false
 	fh = false
@@ -1742,7 +1742,7 @@ func RRC_H() {
 	pc += 2
 }
 func RRC_L() {
-	l = ((l >> 1) & 0x7f) | ((l << 7) & 0x80)
+	l = (l >> 1) | (l << 7)
 	fz = l == 0
 	fn = false
 	fh = false
@@ -1753,7 +1753,7 @@ func RRC_L() {
 func RRC_mHL() {
 	m := uint16(h)<<8 + uint16(l)
 	n := read(m)
-	n = ((n << 1) & 0xfe) | ((n >> 7) & 0x01)
+	n = (n << 1) | (n >> 7)
 	write(m, n)
 	fz = n == 0
 	fn = false
@@ -1763,7 +1763,7 @@ func RRC_mHL() {
 	pc += 2
 }
 func RRC_A() {
-	a = ((a >> 1) & 0x7f) | ((a << 7) & 0x80)
+	a = (a >> 1) | (a << 7)
 	fz = a == 0
 	fn = false
 	fh = false
@@ -1774,7 +1774,7 @@ func RRC_A() {
 
 func RL_B() {
 	b7 := b & 0x80
-	b = ((b << 1) & 0xfe)
+	b <<= 1
 	if fc {
 		b |= 0x01
 	}
@@ -1787,7 +1787,7 @@ func RL_B() {
 }
 func RL_C() {
 	b7 := c & 0x80
-	c = ((c << 1) & 0xfe)
+	c <<= 1
 	if fc {
 		c |= 0x01
 	}
@@ -1800,7 +1800,7 @@ func RL_C() {
 }
 func RL_D() {
 	b7 := d & 0x80
-	d = ((d << 1) & 0xfe)
+	d <<= 1
 	if fc {
 		d |= 0x01
 	}
@@ -1813,7 +1813,7 @@ func RL_D() {
 }
 func RL_E() {
 	b7 := e & 0x80
-	e = ((e << 1) & 0xfe)
+	e <<= 1
 	if fc {
 		e |= 0x01
 	}
@@ -1826,7 +1826,7 @@ func RL_E() {
 }
 func RL_H() {
 	b7 := h & 0x80
-	h = ((h << 1) & 0xfe)
+	h <<= 1
 	if fc {
 		h |= 0x01
 	}
@@ -1839,7 +1839,7 @@ func RL_H() {
 }
 func RL_L() {
 	b7 := l & 0x80
-	l = ((l << 1) & 0xfe)
+	l <<= 1
 	if fc {
 		l |= 0x01
 	}
@@ -1854,7 +1854,7 @@ func RL_mHL() {
 	m := uint16(h)<<8 + uint16(l)
 	n := read(m)
 	b7 := n & 0x80
-	n = ((n << 1) & 0xfe)
+	n <<= 1
 	if fc {
 		n |= 0x01
 	}
@@ -1868,7 +1868,7 @@ func RL_mHL() {
 }
 func RL_A() {
 	b7 := a & 0x80
-	a = ((a << 1) & 0xfe)
+	a <<= 1
 	if fc {
 		a |= 0x01
 	}
@@ -1882,7 +1882,7 @@ func RL_A() {
 
 func RR_B() {
 	b0 := b & 0x01
-	b = ((b >> 1) & 0x7f)
+	b >>= 1
 	if fc {
 		b |= 0x80
 	}
@@ -1895,7 +1895,7 @@ func RR_B() {
 }
 func RR_C() {
 	b0 := c & 0x01
-	c = ((c >> 1) & 0x7f)
+	c >>= 1
 	if fc {
 		c |= 0x80
 	}
@@ -1908,7 +1908,7 @@ func RR_C() {
 }
 func RR_D() {
 	b0 := d & 0x01
-	d = ((d >> 1) & 0x7f)
+	d >>= 1
 	if fc {
 		d |= 0x80
 	}
@@ -1921,7 +1921,7 @@ func RR_D() {
 }
 func RR_E() {
 	b0 := e & 0x01
-	e = ((e >> 1) & 0x7f)
+	e >>= 1
 	if fc {
 		e |= 0x80
 	}
@@ -1934,7 +1934,7 @@ func RR_E() {
 }
 func RR_H() {
 	b0 := h & 0x01
-	h = ((h >> 1) & 0x7f)
+	h >>= 1
 	if fc {
 		h |= 0x80
 	}
@@ -1947,7 +1947,7 @@ func RR_H() {
 }
 func RR_L() {
 	b0 := l & 0x01
-	l = ((l >> 1) & 0x7f)
+	l >>= 1
 	if fc {
 		l |= 0x80
 	}
@@ -1962,7 +1962,7 @@ func RR_mHL() {
 	m := uint16(h)<<8 + uint16(l)
 	n := read(m)
 	b0 := n & 0x01
-	n = ((n >> 1) & 0x7f)
+	n >>= 1
 	if fc {
 		n |= 0x80
 	}
@@ -1976,7 +1976,7 @@ func RR_mHL() {
 }
 func RR_A() {
 	b0 := a & 0x01
-	a = ((a >> 1) & 0x7f)
+	a >>= 1
 	if fc {
 		a |= 0x80
 	}

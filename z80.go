@@ -1141,7 +1141,7 @@ func INC_L() {
 	pc += 1
 }
 func INC_mHL() {
-	m := uint16(b)<<8 + uint16(c)
+	m := uint16(h)<<8 + uint16(l)
 	n := read(m) + 1
 	write(m, n)
 	fz = n == 0
@@ -1208,7 +1208,7 @@ func DEC_L() {
 	pc += 1
 }
 func DEC_mHL() {
-	m := uint16(b)<<8 + uint16(c)
+	m := uint16(h)<<8 + uint16(l)
 	n := read(m) - 1
 	write(m, n)
 	fz = n == 0

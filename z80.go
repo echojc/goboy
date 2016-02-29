@@ -115,8 +115,6 @@ var cbcodes [0x100]func() = [0x100]func(){
 	SET_6_B, SET_6_C, SET_6_D, SET_6_E, SET_6_H, SET_6_L, SET_6_mHL, SET_6_A, SET_7_B, SET_7_C, SET_7_D, SET_7_E, SET_7_H, SET_7_L, SET_7_mHL, SET_7_A,
 }
 
-func TODO() { panic("unknown opcode!") }
-
 func CB() {
 	cbcodes[read(pc+1)]()
 }

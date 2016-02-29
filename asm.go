@@ -8,13 +8,22 @@ import (
 )
 
 func Disassemble(addr uint16) (string, string, uint16) {
-	// bwahaha
-	op := read(addr)
-	name := runtime.FuncForPC(reflect.ValueOf(opcode[op]).Pointer()).Name()
-	parts := strings.Split(name, "_")
-
 	var length uint16 = 1
+	op := read(addr)
+	opcode := opcodes[op]
 	raw := fmt.Sprintf("%02X", op)
+
+	// cb-prefixed code, need to relookup in cbcodes
+	if op == 0xcb {
+		op = read(addr + 1)
+		opcode = cbcodes[op]
+		raw += fmt.Sprintf(" %02X", op)
+		length += 1
+	}
+
+	// bwahaha
+	name := runtime.FuncForPC(reflect.ValueOf(opcode).Pointer()).Name()
+	parts := strings.Split(name, "_")
 
 	for i := 1; i < len(parts); i++ {
 		m := false
@@ -38,14 +47,14 @@ func Disassemble(addr uint16) (string, string, uint16) {
 			}
 			parts[i] = fmt.Sprintf("%s%02Xh", n, v)
 
-			length = 2
+			length += 1
 			raw += fmt.Sprintf(" %02X", rawV)
 		} else if parts[i] == "NN" {
 			rawH := read(addr + 2)
 			rawL := read(addr + 1)
 			parts[i] = fmt.Sprintf("%04xh", uint16(rawH)<<8+uint16(rawL))
 
-			length = 3
+			length += 2
 			raw += fmt.Sprintf(" %02X %02X", rawL, rawH)
 		}
 

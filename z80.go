@@ -99,8 +99,8 @@ var opcodes [0x100]func() = [0x100]func(){
 var cbcodes [0x100]func() = [0x100]func(){
 	RLC_B, RLC_C, RLC_D, RLC_E, RLC_H, RLC_L, RLC_mHL, RLC_A, RRC_B, RRC_C, RRC_D, RRC_E, RRC_H, RRC_L, RRC_mHL, RRC_A,
 	RL_B, RL_C, RL_D, RL_E, RL_H, RL_L, RL_mHL, RL_A, RR_B, RR_C, RR_D, RR_E, RR_H, RR_L, RR_mHL, RR_A,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
+	SLA_B, SLA_C, SLA_D, SLA_E, SLA_H, SLA_L, SLA_mHL, SLA_A, SRA_B, SRA_C, SRA_D, SRA_E, SRA_H, SRA_L, SRA_mHL, SRA_A,
+	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, SRL_B, SRL_C, SRL_D, SRL_E, SRL_H, SRL_L, SRL_mHL, SRL_A,
 	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
 	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
 	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
@@ -1984,6 +1984,234 @@ func RR_A() {
 	fn = false
 	fh = false
 	fc = b0 > 0
+	cycles += 8
+	pc += 2
+}
+
+func SLA_B() {
+	fc = b&0x80 > 0
+	b <<= 1
+	fz = b == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_C() {
+	fc = c&0x80 > 0
+	c <<= 1
+	fz = c == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_D() {
+	fc = d&0x80 > 0
+	d <<= 1
+	fz = d == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_E() {
+	fc = e&0x80 > 0
+	e <<= 1
+	fz = e == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_H() {
+	fc = h&0x80 > 0
+	h <<= 1
+	fz = h == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_L() {
+	fc = l&0x80 > 0
+	l <<= 1
+	fz = l == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SLA_mHL() {
+	m := uint16(h)<<8 + uint16(l)
+	n := read(m)
+	fc = n&0x80 > 0
+	n <<= 1
+	write(m, n)
+	fz = n == 0
+	fn = false
+	fh = false
+	cycles += 16
+	pc += 2
+}
+func SLA_A() {
+	fc = a&0x80 > 0
+	a <<= 1
+	fz = a == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+
+func SRA_B() {
+	fc = b&0x01 > 0
+	b = uint8(int8(b) >> 1)
+	fz = b == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_C() {
+	fc = c&0x01 > 0
+	c = uint8(int8(c) >> 1)
+	fz = c == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_D() {
+	fc = d&0x01 > 0
+	d = uint8(int8(d) >> 1)
+	fz = d == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_E() {
+	fc = e&0x01 > 0
+	e = uint8(int8(e) >> 1)
+	fz = e == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_H() {
+	fc = h&0x01 > 0
+	h = uint8(int8(h) >> 1)
+	fz = h == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_L() {
+	fc = l&0x01 > 0
+	l = uint8(int8(l) >> 1)
+	fz = l == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRA_mHL() {
+	m := uint16(h)<<8 + uint16(l)
+	n := read(m)
+	fc = n&0x01 > 0
+	n = uint8(int8(n) >> 1)
+	write(m, n)
+	fz = n == 0
+	fn = false
+	fh = false
+	cycles += 16
+	pc += 2
+}
+func SRA_A() {
+	fc = a&0x01 > 0
+	a = uint8(int8(a) >> 1)
+	fz = a == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+
+func SRL_B() {
+	fc = b&0x01 > 0
+	b >>= 1
+	fz = b == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_C() {
+	fc = c&0x01 > 0
+	c >>= 1
+	fz = c == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_D() {
+	fc = d&0x01 > 0
+	d >>= 1
+	fz = d == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_E() {
+	fc = e&0x01 > 0
+	e >>= 1
+	fz = e == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_H() {
+	fc = h&0x01 > 0
+	h >>= 1
+	fz = h == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_L() {
+	fc = l&0x01 > 0
+	l >>= 1
+	fz = l == 0
+	fn = false
+	fh = false
+	cycles += 8
+	pc += 2
+}
+func SRL_mHL() {
+	m := uint16(h)<<8 + uint16(l)
+	n := read(m)
+	fc = n&0x01 > 0
+	n >>= 1
+	write(m, n)
+	fz = n == 0
+	fn = false
+	fh = false
+	cycles += 16
+	pc += 2
+}
+func SRL_A() {
+	fc = a&0x01 > 0
+	a >>= 1
+	fz = a == 0
+	fn = false
+	fh = false
 	cycles += 8
 	pc += 2
 }

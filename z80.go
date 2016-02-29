@@ -1450,38 +1450,35 @@ func JP_mHL() {
 	cycles += 4
 }
 func JR_sN() {
+	pc += 2
 	pc = uint16(int32(pc) + int32(int8(read(pc+1))))
 	cycles += 8
 }
 func JR_NZ_sN() {
+	pc += 2
 	if !fz {
 		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
-	} else {
-		pc += 2
 	}
 	cycles += 8
 }
 func JR_Z_sN() {
+	pc += 2
 	if fz {
 		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
-	} else {
-		pc += 2
 	}
 	cycles += 8
 }
 func JR_NC_sN() {
+	pc += 2
 	if !fc {
 		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
-	} else {
-		pc += 2
 	}
 	cycles += 8
 }
 func JR_C_sN() {
+	pc += 2
 	if fc {
 		pc = uint16(int32(pc) + int32(int8(read(pc+1))))
-	} else {
-		pc += 2
 	}
 	cycles += 8
 }

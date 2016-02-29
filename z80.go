@@ -101,18 +101,18 @@ var cbcodes [0x100]func() = [0x100]func(){
 	RL_B, RL_C, RL_D, RL_E, RL_H, RL_L, RL_mHL, RL_A, RR_B, RR_C, RR_D, RR_E, RR_H, RR_L, RR_mHL, RR_A,
 	SLA_B, SLA_C, SLA_D, SLA_E, SLA_H, SLA_L, SLA_mHL, SLA_A, SRA_B, SRA_C, SRA_D, SRA_E, SRA_H, SRA_L, SRA_mHL, SRA_A,
 	SWAP_B, SWAP_C, SWAP_D, SWAP_E, SWAP_H, SWAP_L, SWAP_mHL, SWAP_A, SRL_B, SRL_C, SRL_D, SRL_E, SRL_H, SRL_L, SRL_mHL, SRL_A,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
-	TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO, TODO,
+	BIT_0_B, BIT_0_C, BIT_0_D, BIT_0_E, BIT_0_H, BIT_0_L, BIT_0_mHL, BIT_0_A, BIT_1_B, BIT_1_C, BIT_1_D, BIT_1_E, BIT_1_H, BIT_1_L, BIT_1_mHL, BIT_1_A,
+	BIT_2_B, BIT_2_C, BIT_2_D, BIT_2_E, BIT_2_H, BIT_2_L, BIT_2_mHL, BIT_2_A, BIT_3_B, BIT_3_C, BIT_3_D, BIT_3_E, BIT_3_H, BIT_3_L, BIT_3_mHL, BIT_3_A,
+	BIT_4_B, BIT_4_C, BIT_4_D, BIT_4_E, BIT_4_H, BIT_4_L, BIT_4_mHL, BIT_4_A, BIT_5_B, BIT_5_C, BIT_5_D, BIT_5_E, BIT_5_H, BIT_5_L, BIT_5_mHL, BIT_5_A,
+	BIT_6_B, BIT_6_C, BIT_6_D, BIT_6_E, BIT_6_H, BIT_6_L, BIT_6_mHL, BIT_6_A, BIT_7_B, BIT_7_C, BIT_7_D, BIT_7_E, BIT_7_H, BIT_7_L, BIT_7_mHL, BIT_7_A,
+	RES_0_B, RES_0_C, RES_0_D, RES_0_E, RES_0_H, RES_0_L, RES_0_mHL, RES_0_A, RES_1_B, RES_1_C, RES_1_D, RES_1_E, RES_1_H, RES_1_L, RES_1_mHL, RES_1_A,
+	RES_2_B, RES_2_C, RES_2_D, RES_2_E, RES_2_H, RES_2_L, RES_2_mHL, RES_2_A, RES_3_B, RES_3_C, RES_3_D, RES_3_E, RES_3_H, RES_3_L, RES_3_mHL, RES_3_A,
+	RES_4_B, RES_4_C, RES_4_D, RES_4_E, RES_4_H, RES_4_L, RES_4_mHL, RES_4_A, RES_5_B, RES_5_C, RES_5_D, RES_5_E, RES_5_H, RES_5_L, RES_5_mHL, RES_5_A,
+	RES_6_B, RES_6_C, RES_6_D, RES_6_E, RES_6_H, RES_6_L, RES_6_mHL, RES_6_A, RES_7_B, RES_7_C, RES_7_D, RES_7_E, RES_7_H, RES_7_L, RES_7_mHL, RES_7_A,
+	SET_0_B, SET_0_C, SET_0_D, SET_0_E, SET_0_H, SET_0_L, SET_0_mHL, SET_0_A, SET_1_B, SET_1_C, SET_1_D, SET_1_E, SET_1_H, SET_1_L, SET_1_mHL, SET_1_A,
+	SET_2_B, SET_2_C, SET_2_D, SET_2_E, SET_2_H, SET_2_L, SET_2_mHL, SET_2_A, SET_3_B, SET_3_C, SET_3_D, SET_3_E, SET_3_H, SET_3_L, SET_3_mHL, SET_3_A,
+	SET_4_B, SET_4_C, SET_4_D, SET_4_E, SET_4_H, SET_4_L, SET_4_mHL, SET_4_A, SET_5_B, SET_5_C, SET_5_D, SET_5_E, SET_5_H, SET_5_L, SET_5_mHL, SET_5_A,
+	SET_6_B, SET_6_C, SET_6_D, SET_6_E, SET_6_H, SET_6_L, SET_6_mHL, SET_6_A, SET_7_B, SET_7_C, SET_7_D, SET_7_E, SET_7_H, SET_7_L, SET_7_mHL, SET_7_A,
 }
 
 func TODO() { panic("unknown opcode!") }
@@ -2291,3 +2291,275 @@ func SWAP_A() {
 	cycles += 8
 	pc += 2
 }
+
+func BIT_0_B() { fz = b&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_C() { fz = c&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_D() { fz = d&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_E() { fz = e&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_H() { fz = h&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_L() { fz = l&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x01 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_0_A() { fz = a&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_1_B() { fz = b&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_C() { fz = c&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_D() { fz = d&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_E() { fz = e&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_H() { fz = h&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_L() { fz = l&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x02 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_1_A() { fz = a&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_2_B() { fz = b&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_C() { fz = c&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_D() { fz = d&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_E() { fz = e&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_H() { fz = h&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_L() { fz = l&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x04 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_2_A() { fz = a&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_3_B() { fz = b&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_C() { fz = c&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_D() { fz = d&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_E() { fz = e&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_H() { fz = h&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_L() { fz = l&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x08 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_3_A() { fz = a&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_4_B() { fz = b&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_C() { fz = c&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_D() { fz = d&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_E() { fz = e&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_H() { fz = h&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_L() { fz = l&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x10 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_4_A() { fz = a&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_5_B() { fz = b&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_C() { fz = c&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_D() { fz = d&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_E() { fz = e&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_H() { fz = h&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_L() { fz = l&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x20 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_5_A() { fz = a&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_6_B() { fz = b&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_C() { fz = c&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_D() { fz = d&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_E() { fz = e&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_H() { fz = h&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_L() { fz = l&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x40 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_6_A() { fz = a&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func BIT_7_B() { fz = b&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_C() { fz = c&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_D() { fz = d&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_E() { fz = e&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_H() { fz = h&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_L() { fz = l&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_mHL() {
+	n := read(uint16(h)<<8 + uint16(l))
+	fz = n&0x80 > 0
+	fn = false
+	fh = true
+	cycles += 16
+	pc += 2
+}
+func BIT_7_A() { fz = a&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+
+func RES_0_B()   { b &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_C()   { c &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_D()   { d &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_E()   { e &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_H()   { h &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_L()   { l &= 0xfe; cycles += 8; pc += 2 }
+func RES_0_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xfe); cycles += 16; pc += 2 }
+func RES_0_A()   { a &= 0xfe; cycles += 8; pc += 2 }
+
+func RES_1_B()   { b &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_C()   { c &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_D()   { d &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_E()   { e &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_H()   { h &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_L()   { l &= 0xfd; cycles += 8; pc += 2 }
+func RES_1_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xfd); cycles += 16; pc += 2 }
+func RES_1_A()   { a &= 0xfd; cycles += 8; pc += 2 }
+
+func RES_2_B()   { b &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_C()   { c &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_D()   { d &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_E()   { e &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_H()   { h &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_L()   { l &= 0xfb; cycles += 8; pc += 2 }
+func RES_2_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xfb); cycles += 16; pc += 2 }
+func RES_2_A()   { a &= 0xfb; cycles += 8; pc += 2 }
+
+func RES_3_B()   { b &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_C()   { c &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_D()   { d &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_E()   { e &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_H()   { h &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_L()   { l &= 0xf7; cycles += 8; pc += 2 }
+func RES_3_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xf7); cycles += 16; pc += 2 }
+func RES_3_A()   { a &= 0xf7; cycles += 8; pc += 2 }
+
+func RES_4_B()   { b &= 0xef; cycles += 8; pc += 2 }
+func RES_4_C()   { c &= 0xef; cycles += 8; pc += 2 }
+func RES_4_D()   { d &= 0xef; cycles += 8; pc += 2 }
+func RES_4_E()   { e &= 0xef; cycles += 8; pc += 2 }
+func RES_4_H()   { h &= 0xef; cycles += 8; pc += 2 }
+func RES_4_L()   { l &= 0xef; cycles += 8; pc += 2 }
+func RES_4_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xef); cycles += 16; pc += 2 }
+func RES_4_A()   { a &= 0xef; cycles += 8; pc += 2 }
+
+func RES_5_B()   { b &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_C()   { c &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_D()   { d &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_E()   { e &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_H()   { h &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_L()   { l &= 0xdf; cycles += 8; pc += 2 }
+func RES_5_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xdf); cycles += 16; pc += 2 }
+func RES_5_A()   { a &= 0xdf; cycles += 8; pc += 2 }
+
+func RES_6_B()   { b &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_C()   { c &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_D()   { d &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_E()   { e &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_H()   { h &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_L()   { l &= 0xbf; cycles += 8; pc += 2 }
+func RES_6_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0xbf); cycles += 16; pc += 2 }
+func RES_6_A()   { a &= 0xbf; cycles += 8; pc += 2 }
+
+func RES_7_B()   { b &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_C()   { c &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_D()   { d &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_E()   { e &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_H()   { h &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_L()   { l &= 0x7f; cycles += 8; pc += 2 }
+func RES_7_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)&0x7f); cycles += 16; pc += 2 }
+func RES_7_A()   { a &= 0x7f; cycles += 8; pc += 2 }
+
+func SET_0_B()   { b |= 0x01; cycles += 8; pc += 2 }
+func SET_0_C()   { c |= 0x01; cycles += 8; pc += 2 }
+func SET_0_D()   { d |= 0x01; cycles += 8; pc += 2 }
+func SET_0_E()   { e |= 0x01; cycles += 8; pc += 2 }
+func SET_0_H()   { h |= 0x01; cycles += 8; pc += 2 }
+func SET_0_L()   { l |= 0x01; cycles += 8; pc += 2 }
+func SET_0_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x01); cycles += 16; pc += 2 }
+func SET_0_A()   { a |= 0x01; cycles += 8; pc += 2 }
+
+func SET_1_B()   { b |= 0x02; cycles += 8; pc += 2 }
+func SET_1_C()   { c |= 0x02; cycles += 8; pc += 2 }
+func SET_1_D()   { d |= 0x02; cycles += 8; pc += 2 }
+func SET_1_E()   { e |= 0x02; cycles += 8; pc += 2 }
+func SET_1_H()   { h |= 0x02; cycles += 8; pc += 2 }
+func SET_1_L()   { l |= 0x02; cycles += 8; pc += 2 }
+func SET_1_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x02); cycles += 16; pc += 2 }
+func SET_1_A()   { a |= 0x02; cycles += 8; pc += 2 }
+
+func SET_2_B()   { b |= 0x04; cycles += 8; pc += 2 }
+func SET_2_C()   { c |= 0x04; cycles += 8; pc += 2 }
+func SET_2_D()   { d |= 0x04; cycles += 8; pc += 2 }
+func SET_2_E()   { e |= 0x04; cycles += 8; pc += 2 }
+func SET_2_H()   { h |= 0x04; cycles += 8; pc += 2 }
+func SET_2_L()   { l |= 0x04; cycles += 8; pc += 2 }
+func SET_2_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x04); cycles += 16; pc += 2 }
+func SET_2_A()   { a |= 0x04; cycles += 8; pc += 2 }
+
+func SET_3_B()   { b |= 0x08; cycles += 8; pc += 2 }
+func SET_3_C()   { c |= 0x08; cycles += 8; pc += 2 }
+func SET_3_D()   { d |= 0x08; cycles += 8; pc += 2 }
+func SET_3_E()   { e |= 0x08; cycles += 8; pc += 2 }
+func SET_3_H()   { h |= 0x08; cycles += 8; pc += 2 }
+func SET_3_L()   { l |= 0x08; cycles += 8; pc += 2 }
+func SET_3_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x08); cycles += 16; pc += 2 }
+func SET_3_A()   { a |= 0x08; cycles += 8; pc += 2 }
+
+func SET_4_B()   { b |= 0x10; cycles += 8; pc += 2 }
+func SET_4_C()   { c |= 0x10; cycles += 8; pc += 2 }
+func SET_4_D()   { d |= 0x10; cycles += 8; pc += 2 }
+func SET_4_E()   { e |= 0x10; cycles += 8; pc += 2 }
+func SET_4_H()   { h |= 0x10; cycles += 8; pc += 2 }
+func SET_4_L()   { l |= 0x10; cycles += 8; pc += 2 }
+func SET_4_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x10); cycles += 16; pc += 2 }
+func SET_4_A()   { a |= 0x10; cycles += 8; pc += 2 }
+
+func SET_5_B()   { b |= 0x20; cycles += 8; pc += 2 }
+func SET_5_C()   { c |= 0x20; cycles += 8; pc += 2 }
+func SET_5_D()   { d |= 0x20; cycles += 8; pc += 2 }
+func SET_5_E()   { e |= 0x20; cycles += 8; pc += 2 }
+func SET_5_H()   { h |= 0x20; cycles += 8; pc += 2 }
+func SET_5_L()   { l |= 0x20; cycles += 8; pc += 2 }
+func SET_5_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x20); cycles += 16; pc += 2 }
+func SET_5_A()   { a |= 0x20; cycles += 8; pc += 2 }
+
+func SET_6_B()   { b |= 0x40; cycles += 8; pc += 2 }
+func SET_6_C()   { c |= 0x40; cycles += 8; pc += 2 }
+func SET_6_D()   { d |= 0x40; cycles += 8; pc += 2 }
+func SET_6_E()   { e |= 0x40; cycles += 8; pc += 2 }
+func SET_6_H()   { h |= 0x40; cycles += 8; pc += 2 }
+func SET_6_L()   { l |= 0x40; cycles += 8; pc += 2 }
+func SET_6_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x40); cycles += 16; pc += 2 }
+func SET_6_A()   { a |= 0x40; cycles += 8; pc += 2 }
+
+func SET_7_B()   { b |= 0x80; cycles += 8; pc += 2 }
+func SET_7_C()   { c |= 0x80; cycles += 8; pc += 2 }
+func SET_7_D()   { d |= 0x80; cycles += 8; pc += 2 }
+func SET_7_E()   { e |= 0x80; cycles += 8; pc += 2 }
+func SET_7_H()   { h |= 0x80; cycles += 8; pc += 2 }
+func SET_7_L()   { l |= 0x80; cycles += 8; pc += 2 }
+func SET_7_mHL() { m := uint16(h)<<8 + uint16(l); write(m, read(m)|0x80); cycles += 16; pc += 2 }
+func SET_7_A()   { a |= 0x80; cycles += 8; pc += 2 }

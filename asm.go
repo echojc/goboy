@@ -45,7 +45,7 @@ func Disassemble(addr uint16) (string, string, uint16) {
 				v = 0x100 - v
 				n = "-"
 			}
-			parts[i] = fmt.Sprintf("%s%02Xh", n, v)
+			parts[i] = fmt.Sprintf("%s%02xh", n, v)
 
 			length += 1
 			raw += fmt.Sprintf(" %02X", rawV)

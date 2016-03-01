@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/jroimartin/gocui"
+	"github.com/deweerdt/gocui"
 )
 
 func main() {

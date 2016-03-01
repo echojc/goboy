@@ -59,7 +59,13 @@ func updateRegistersView(g *gocui.Gui) error {
 			" SP %08b %08b %04x \n" +
 			" PC %08b %08b %04x \n"
 
-	fmt.Fprintf(v, fmtString, a, a, b2i(fz), b2i(fn), b2i(fh), b2i(fc), b, b, c, c, d, d, e, e, h, h, l, l, sp>>8, sp&0xff, sp, pc>>8, sp&0xff, pc)
+	fmt.Fprintf(v, fmtString,
+		a, a, b2i(fz), b2i(fn), b2i(fh), b2i(fc),
+		b, b, c, c,
+		d, d, e, e,
+		h, h, l, l,
+		sp>>8, sp&0xff, sp,
+		pc>>8, pc&0xff, pc)
 
 	return nil
 }

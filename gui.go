@@ -10,7 +10,7 @@ import (
 // Render entry point
 //////////////////////////////////////////
 
-func debuggerLayout(g *gocui.Gui) error {
+func guiLayout(g *gocui.Gui) error {
 	if err := updateRegistersView(g); err != nil {
 		return err
 	}

@@ -32,9 +32,13 @@ func initGui() {
 	}
 	defer g.Close()
 
-	g.SetLayout(debuggerLayout)
+	g.SetLayout(guiLayout)
 
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {
+		log.Panicln(err)
+	}
+
+	if err := debuggerSetKeybindings(g); err != nil {
 		log.Panicln(err)
 	}
 

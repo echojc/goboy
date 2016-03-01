@@ -217,11 +217,17 @@ func updateIoView(g *gocui.Gui) error {
 	fmt.Fprintf(v, " IE   %08b\n", read(0xffff))
 	fmt.Fprintf(v, " IF   %08b\n", read(0xff0f))
 
-	fmt.Fprintf(v, "      M W  O B\n")
+	fmt.Fprintf(v, "      M W   OB\n")
 	fmt.Fprintf(v, " LCDC %08b\n", read(0xff40))
 
 	fmt.Fprintf(v, "       YOVHC M\n")
 	fmt.Fprintf(v, " STAT %08b\n", read(0xff41))
+	fmt.Fprintf(v, " LY   %08b\n", read(0xff44))
+	fmt.Fprintf(v, " LYC  %08b\n", read(0xff45))
+
+	fmt.Fprintf(v, " BGP  %08b\n", read(0xff47))
+	fmt.Fprintf(v, " OBP1 %08b\n", read(0xff48))
+	fmt.Fprintf(v, " OBP2 %08b\n", read(0xff49))
 
 	return nil
 }
@@ -238,6 +244,8 @@ func updateMiscView(g *gocui.Gui) error {
 		return err
 	}
 	v.Clear()
+
+	fmt.Fprintf(v, " clks: % 5d\n", cycles)
 
 	return nil
 }

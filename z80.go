@@ -16,10 +16,32 @@ var halted bool
 var stopped bool
 var interruptsEnabled bool
 
-var cycles int32
+var cycles uint32
+
+const cyclesPerFrame = 70224
+const cyclesPerLine = 456
+
+func ly() uint8 { return uint8(cycles / cyclesPerLine) }
+func lcdMode() uint8 {
+	y := ly()
+	if y >= 144 { // vblank
+		return 1
+	} else {
+		x := cycles - (cyclesPerLine * uint32(y))
+		switch {
+		case x < 80: // oam
+			return 2
+		case x < 252: // oam + vram
+			return 3
+		default: // hblank
+			return 0
+		}
+	}
+}
 
 func Step() {
 	opcodes[read(pc)]()
+	cycles %= cyclesPerFrame
 }
 
 func LoadRom(data []uint8) {
@@ -52,7 +74,14 @@ func read(addr uint16) uint8 {
 		return 0
 	case addr < 0xff4c:
 		// io registers
-		return io[addr-0xff00]
+		switch addr {
+		case 0xff41: // STAT
+			return io[0x41]&0xfc | lcdMode()
+		case 0xff44: // LY
+			return ly()
+		default:
+			return io[addr-0xff00]
+		}
 	case addr < 0xff80:
 		// unmapped
 		return 0

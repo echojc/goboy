@@ -36,6 +36,7 @@ func debuggerLayout(g *gocui.Gui) error {
 
 const RegistersViewWidth = 30
 const RegistersViewHeight = 7
+const DisassemblerViewWidth = 48
 
 //////////////////////////////////////////
 // Registers
@@ -55,10 +56,10 @@ func updateRegistersView(g *gocui.Gui) error {
 			" B %08b %02x C %08b %02x\n" +
 			" D %08b %02x E %08b %02x\n" +
 			" H %08b %02x L %08b %02x\n" +
-			" SP %016b %04x \n" +
-			" PC %016b %04x \n"
+			" SP %08b %08b %04x \n" +
+			" PC %08b %08b %04x \n"
 
-	fmt.Fprintf(v, fmtString, a, a, b2i(fz), b2i(fn), b2i(fh), b2i(fc), b, b, c, c, d, d, e, e, h, h, l, l, sp, sp, pc, pc)
+	fmt.Fprintf(v, fmtString, a, a, b2i(fz), b2i(fn), b2i(fh), b2i(fc), b, b, c, c, d, d, e, e, h, h, l, l, sp>>8, sp&0xff, sp, pc>>8, sp&0xff, pc)
 
 	return nil
 }
@@ -76,10 +77,10 @@ func b2i(b bool) int {
 //////////////////////////////////////////
 
 func updateDisassemblerView(g *gocui.Gui) error {
-	maxX, maxY := g.Size()
+	_, maxY := g.Size()
 	height := (maxY - 1) - RegistersViewHeight
 
-	v, err := g.SetView("disassembler", 0, RegistersViewHeight, maxX/2, maxY-1)
+	v, err := g.SetView("disassembler", 0, RegistersViewHeight, DisassemblerViewWidth, maxY-1)
 	if err == gocui.ErrUnknownView {
 		v.Title = " disassembler "
 	} else if err != nil {
@@ -115,7 +116,7 @@ func updateDisassemblerView(g *gocui.Gui) error {
 
 	// print the disassembly
 	for i := startIndex; i < startIndex+height && i < len(ds); i++ {
-		fmt.Fprintln(v, ds[i].pretty)
+		fmt.Fprintf(v, " %s\n", ds[i].pretty)
 	}
 
 	v.SetCursor(0, height/2)
@@ -154,7 +155,7 @@ func updateMemoryView(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	height := (maxY - 1) - RegistersViewHeight
 
-	v, err := g.SetView("memory", maxX/2, RegistersViewHeight, maxX-1, maxY-1)
+	v, err := g.SetView("memory", DisassemblerViewWidth, RegistersViewHeight, maxX-1, maxY-1)
 	if err == gocui.ErrUnknownView {
 		v.Title = " memory "
 	} else if err != nil {
@@ -163,12 +164,12 @@ func updateMemoryView(g *gocui.Gui) error {
 	v.Clear()
 
 	// header
-	fmt.Fprintf(v, "        0  1  2  3  4  5  6  7    8  9  a  b  c  d  e  f\n")
+	fmt.Fprintf(v, "         00 01 02 03 04 05 06 07   08 09 0a 0b 0c 0d 0e 0f\n\n")
 
 	// start from nearest 0x10 rounded down
 	addr := uint(viewMemoryBaseAddr - (viewMemoryBaseAddr % 0x10))
 	for i := 0; i < height && addr < 0x10000; i++ {
-		fmt.Fprintf(v, " %04x ", addr)
+		fmt.Fprintf(v, " %04x   ", addr)
 		for j := uint16(0x00); j < 0x08; j++ {
 			fmt.Fprintf(v, " %02x", read(uint16(addr)+j))
 		}
@@ -191,7 +192,6 @@ func updateMiscView(g *gocui.Gui) error {
 	maxX, _ := g.Size()
 	v, err := g.SetView("misc", RegistersViewWidth, 0, maxX-1, RegistersViewHeight)
 	if err == gocui.ErrUnknownView {
-		v.Title = " i/o registers "
 	} else if err != nil {
 		return err
 	}

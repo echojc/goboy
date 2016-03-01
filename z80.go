@@ -5,6 +5,7 @@ var fz, fn, fh, fc bool
 var sp uint16 = 0xfffe
 var pc uint16 = 0x0100
 
+var rom []uint8
 var ram [0x2000]uint8
 var vram [0x2000]uint8
 var xram [0x7f]uint8
@@ -20,11 +21,15 @@ func Step() {
 	opcodes[read(pc)]()
 }
 
+func LoadRom(data []uint8) {
+	// copy?
+	rom = data
+}
+
 func read(addr uint16) uint8 {
 	switch {
 	case addr < 0x4000:
-		// rom #0
-		return 0
+		return rom[addr]
 	case addr < 0x8000:
 		// rom #1-x
 		return 0

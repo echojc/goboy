@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-func Disassemble(addr uint16) (string, string, uint16) {
-	var length uint16 = 1
+func Disassemble(addr uint16) (string, string, uint) {
+	var length uint = 1
 	op := read(addr)
 	opcode := opcodes[op]
 	raw := fmt.Sprintf("%02X", op)

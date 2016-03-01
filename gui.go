@@ -27,6 +27,10 @@ func guiLayout(g *gocui.Gui) error {
 		return err
 	}
 
+	if err := updateIoView(g); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -37,6 +41,7 @@ func guiLayout(g *gocui.Gui) error {
 const RegistersViewWidth = 30
 const RegistersViewHeight = 7
 const DisassemblerViewWidth = 48
+const IoViewWidth = 18
 
 //////////////////////////////////////////
 // Registers
@@ -155,13 +160,13 @@ func renderDisassembly(startAddr uint16, max int) []Disassembly {
 // Memory
 //////////////////////////////////////////
 
-var viewMemoryBaseAddr uint16
+var viewMemoryBaseAddr uint16 = 0xff00
 
 func updateMemoryView(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
 	height := (maxY - 1) - RegistersViewHeight
 
-	v, err := g.SetView("memory", DisassemblerViewWidth, RegistersViewHeight, maxX-1, maxY-1)
+	v, err := g.SetView("memory", DisassemblerViewWidth, RegistersViewHeight, maxX-IoViewWidth, maxY-1)
 	if err == gocui.ErrUnknownView {
 		v.Title = " memory "
 	} else if err != nil {
@@ -186,6 +191,37 @@ func updateMemoryView(g *gocui.Gui) error {
 		fmt.Fprintf(v, "\n")
 		addr += 0x10
 	}
+
+	return nil
+}
+
+//////////////////////////////////////////
+// I/O registers
+//////////////////////////////////////////
+
+func updateIoView(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
+	v, err := g.SetView("io", maxX-IoViewWidth, RegistersViewHeight, maxX-1, maxY-1)
+	if err == gocui.ErrUnknownView {
+		v.Title = " i/o "
+	} else if err != nil {
+		return err
+	}
+	v.Clear()
+
+	var interruptStatus = "off"
+	if interruptsEnabled {
+		interruptStatus = "on "
+	}
+	fmt.Fprintf(v, " I:%s   KSTLV\n", interruptStatus)
+	fmt.Fprintf(v, " IE   %08b\n", read(0xffff))
+	fmt.Fprintf(v, " IF   %08b\n", read(0xff0f))
+
+	fmt.Fprintf(v, "      M W  O B\n")
+	fmt.Fprintf(v, " LCDC %08b\n", read(0xff40))
+
+	fmt.Fprintf(v, "       YOVHC M\n")
+	fmt.Fprintf(v, " STAT %08b\n", read(0xff41))
 
 	return nil
 }

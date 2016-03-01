@@ -8,6 +8,7 @@ var pc uint16 = 0x0100
 var rom []uint8
 var ram [0x2000]uint8
 var vram [0x2000]uint8
+var io [0x4c]uint8
 var xram [0x7f]uint8
 
 var interrupt uint8
@@ -46,8 +47,14 @@ func read(addr uint16) uint8 {
 	case addr < 0xfea0:
 		// oam
 		return 0
-	case addr < 0xff80:
+	case addr < 0xff00:
+		// unmapped
+		return 0
+	case addr < 0xff4c:
 		// io registers
+		return io[addr-0xff00]
+	case addr < 0xff80:
+		// unmapped
 		return 0
 	case addr < 0xffff:
 		return xram[addr-0xff80]
@@ -73,12 +80,17 @@ func write(addr uint16, v uint8) {
 		ram[addr-0xe000] = v
 	case addr < 0xfea0:
 		// oam
-	case addr < 0xff80:
+	case addr < 0xff00:
+		// unmapped
+	case addr < 0xff4c:
 		// io registers
+		io[addr-0xff00] = v
+	case addr < 0xff80:
+		// unmapped
 	case addr < 0xffff:
 		xram[addr-0xff80] = v
 	default:
-		// interrupt
+		interrupt = v
 	}
 }
 

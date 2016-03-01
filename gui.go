@@ -53,9 +53,9 @@ func updateRegistersView(g *gocui.Gui) error {
 
 	fmtString :=
 		" A %08b %02x Z%d N%d H%d C%d\n" +
-			" B %08b %02x C %08b %02x\n" +
-			" D %08b %02x E %08b %02x\n" +
-			" H %08b %02x L %08b %02x\n" +
+			" B %08b %02x %02x %08b C\n" +
+			" D %08b %02x %02x %08b E\n" +
+			" H %08b %02x %02x %08b L\n" +
 			" SP %08b %08b %04x \n" +
 			" PC %08b %08b %04x \n"
 

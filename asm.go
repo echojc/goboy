@@ -7,6 +7,26 @@ import (
 	"strings"
 )
 
+type Disassembly struct {
+	addr   uint16
+	pretty string
+}
+
+func renderDisassembly() []Disassembly {
+	// allocate enough memory to hold all instructions
+	output := make([]Disassembly, 0, 0x10000/3)
+
+	// render all instructions
+	addr := uint(0)
+	for i := 0; addr < 0x10000; i++ {
+		raw, pretty, length := Disassemble(uint16(addr))
+		output = append(output, Disassembly{uint16(addr), fmt.Sprintf("%04x    % -12s%s", addr, raw, pretty)})
+		addr += length
+	}
+
+	return output
+}
+
 func Disassemble(addr uint16) (string, string, uint) {
 	var length uint = 1
 	op := read(addr)

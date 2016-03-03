@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/deweerdt/gocui"
 )
@@ -87,80 +88,68 @@ func b2i(b bool) int {
 // Disassembler
 //////////////////////////////////////////
 
+var viewDisassemblerBaseIndex int
+var disassembly []Disassembly
+var viewDisassemblerPcLock bool
+
 func updateDisassemblerView(g *gocui.Gui) error {
 	_, maxY := g.Size()
 	height := (maxY - 1) - RegistersViewHeight
 
 	v, err := g.SetView("disassembler", 0, RegistersViewHeight, DisassemblerViewWidth, maxY-1)
 	if err == gocui.ErrUnknownView {
-		v.Title = " disassembler "
+		g.SetCurrentView(v.Name())
+
+		// init
+		disassembly = renderDisassembly()
+		viewDisassemblerBaseIndex = indexOfDisassemblyForAddress(0x0100)
+		viewDisassemblerPcLock = true
 	} else if err != nil {
 		return err
 	}
 	v.Clear()
 
-	// start from up to `extraLines` instructions ago
-	extraLines := uint16(height / 2)
-	maxExtraBytes := extraLines * 3
-
-	var startAddr uint16
-	if pc < maxExtraBytes {
-		startAddr = 0
+	if g.CurrentView() == v {
+		v.Title = " disassembler* "
 	} else {
-		startAddr = pc - maxExtraBytes
+		v.Title = " disassembler "
 	}
 
-	// get the entire range
-	ds := renderDisassembly(startAddr, height+int(maxExtraBytes))
+	pcIndex := indexOfDisassemblyForAddress(pc)
 
-	// find where instruction actually starts, and count `extraLines` back
-	var startIndex int
-	for i := 0; i < len(ds); i++ {
-		if ds[i].addr == pc {
-			startIndex = i - int(extraLines)
-			break
-		}
+	// if pc lock, scroll to pc
+	if viewDisassemblerPcLock && (pcIndex < viewDisassemblerBaseIndex || pcIndex >= viewDisassemblerBaseIndex+height-1) {
+		viewDisassemblerBaseIndex = pcIndex
 	}
-	if startIndex < 0 {
-		startIndex = 0
+
+	// put cursor at the current instruction
+	cursorIndex := pcIndex - viewDisassemblerBaseIndex
+	if cursorIndex >= 0 && cursorIndex < height {
+		v.SetCursor(0, cursorIndex)
+		v.Highlight = true
+	} else {
+		v.Highlight = false
 	}
 
 	// print the disassembly
-	for i := startIndex; i < startIndex+height && i < len(ds); i++ {
-		fmt.Fprintf(v, " %s\n", ds[i].pretty)
+	for i := viewDisassemblerBaseIndex; i < viewDisassemblerBaseIndex+height && i < len(disassembly); i++ {
+		fmt.Fprintf(v, " %s\n", disassembly[i].pretty)
 	}
-
-	v.SetCursor(0, height/2)
-	v.Highlight = true
 
 	return nil
 }
 
-type Disassembly struct {
-	addr   uint16
-	pretty string
-}
-
-func renderDisassembly(startAddr uint16, max int) []Disassembly {
-	// allocate enough memory to hold all instructions
-	output := make([]Disassembly, max)
-
-	// render all instructions
-	addr := uint(startAddr)
-	for i := 0; i < max && addr < 0x10000; i++ {
-		raw, pretty, length := Disassemble(uint16(addr))
-		output[i] = Disassembly{uint16(addr), fmt.Sprintf("%04x    % -12s%s", addr, raw, pretty)}
-		addr += length
-	}
-
-	return output
+func indexOfDisassemblyForAddress(addr uint16) int {
+	return sort.Search(len(disassembly), func(i int) bool {
+		return disassembly[i].addr >= addr
+	})
 }
 
 //////////////////////////////////////////
 // Memory
 //////////////////////////////////////////
 
-var viewMemoryBaseAddr uint16 = 0xff00
+var viewMemoryBaseAddr int = 0xfc00
 
 func updateMemoryView(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
@@ -168,11 +157,17 @@ func updateMemoryView(g *gocui.Gui) error {
 
 	v, err := g.SetView("memory", DisassemblerViewWidth, RegistersViewHeight, maxX-IoViewWidth, maxY-1)
 	if err == gocui.ErrUnknownView {
-		v.Title = " memory "
+		g.SetCurrentView(v.Name())
 	} else if err != nil {
 		return err
 	}
 	v.Clear()
+
+	if g.CurrentView() == v {
+		v.Title = " memory* "
+	} else {
+		v.Title = " memory "
+	}
 
 	// header
 	fmt.Fprintf(v, "         00 01 02 03 04 05 06 07   08 09 0a 0b 0c 0d 0e 0f\n\n")
@@ -248,4 +243,107 @@ func updateMiscView(g *gocui.Gui) error {
 	fmt.Fprintf(v, " clks: % 5d\n", cycles)
 
 	return nil
+}
+
+//////////////////////////////////////////
+// Keybindings
+//////////////////////////////////////////
+
+func guiSetKeybindings(g *gocui.Gui) error {
+	// debugging
+	if err := g.SetKeybinding("", 'n', gocui.ModNone, action(debuggerStep)); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", 'r', gocui.ModNone, action(debuggerRun)); err != nil {
+		return err
+	}
+
+	// pane
+	if err := g.SetKeybinding("", 'd', gocui.ModNone, guiSetFocus("disassembler")); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", 'm', gocui.ModNone, guiSetFocus("memory")); err != nil {
+		return err
+	}
+
+	// scroll
+	if err := g.SetKeybinding("", gocui.KeyCtrlE, gocui.ModNone, guiScroll("e")); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyCtrlY, gocui.ModNone, guiScroll("y")); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyCtrlD, gocui.ModNone, guiScroll("d")); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyCtrlU, gocui.ModNone, guiScroll("u")); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func action(fn func()) gocui.KeybindingHandler {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		fn()
+		return nil
+	}
+}
+
+func guiSetFocus(viewname string) gocui.KeybindingHandler {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		return g.SetCurrentView(viewname)
+	}
+}
+
+func guiScroll(key string) gocui.KeybindingHandler {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		view := g.CurrentView()
+		if view == nil {
+			return nil
+		}
+
+		_, maxY := g.Size()
+		height := (maxY - 1) - RegistersViewHeight
+
+		switch view.Name() {
+		case "disassembler":
+			switch key {
+			case "e":
+				viewDisassemblerBaseIndex += 1
+			case "y":
+				viewDisassemblerBaseIndex -= 1
+			case "d":
+				viewDisassemblerBaseIndex += height / 2
+			case "u":
+				viewDisassemblerBaseIndex -= height / 2
+			}
+			if viewDisassemblerBaseIndex < 0 {
+				viewDisassemblerBaseIndex = 0
+			}
+			if viewDisassemblerBaseIndex > len(disassembly)-height+1 {
+				viewDisassemblerBaseIndex = len(disassembly) - height + 1
+			}
+			viewDisassemblerPcLock = false
+		case "memory":
+			switch key {
+			case "e":
+				viewMemoryBaseAddr += 0x10
+			case "y":
+				viewMemoryBaseAddr -= 0x10
+			case "d":
+				viewMemoryBaseAddr += 0x10 * height / 2
+			case "u":
+				viewMemoryBaseAddr -= 0x10 * height / 2
+			}
+			if viewMemoryBaseAddr < 0 {
+				viewMemoryBaseAddr = 0
+			}
+			if viewMemoryBaseAddr > 0x10000-(0x10*(height-3)) {
+				viewMemoryBaseAddr = 0x10000 - (0x10 * (height - 3))
+			}
+		}
+
+		return nil
+	}
 }

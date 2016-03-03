@@ -38,7 +38,7 @@ func initGui() {
 		log.Panicln(err)
 	}
 
-	if err := debuggerSetKeybindings(g); err != nil {
+	if err := guiSetKeybindings(g); err != nil {
 		log.Panicln(err)
 	}
 

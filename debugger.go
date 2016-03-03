@@ -1,16 +1,13 @@
 package main
 
-import "github.com/deweerdt/gocui"
-
-func debuggerSetKeybindings(g *gocui.Gui) error {
-	if err := g.SetKeybinding("", 'n', gocui.ModNone, debuggerStep); err != nil {
-		return err
-	}
-
-	return nil
+func debuggerStep() {
+	// snap to pc
+	viewDisassemblerPcLock = true
+	Step()
 }
 
-func debuggerStep(g *gocui.Gui, v *gocui.View) error {
-	Step()
-	return nil
+func debuggerRun() {
+	for pc != 0x01a1 {
+		debuggerStep()
+	}
 }

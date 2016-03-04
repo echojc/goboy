@@ -18,6 +18,8 @@ var interruptsEnabled bool
 
 var cycles uint32
 
+var romBank uint8 = 1
+
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
@@ -52,10 +54,11 @@ func LoadRom(data []uint8) {
 func read(addr uint16) uint8 {
 	switch {
 	case addr < 0x4000:
+		// rom #0
 		return rom[addr]
 	case addr < 0x8000:
 		// rom #1-x
-		return 0
+		return rom[(0x4000*uint16(romBank))+(addr-0x4000)]
 	case addr < 0xa000:
 		return vram[addr-0x8000]
 	case addr < 0xc000:
@@ -94,8 +97,13 @@ func read(addr uint16) uint8 {
 
 func write(addr uint16, v uint8) {
 	switch {
+	case addr < 0x2000:
 	case addr < 0x4000:
-		// rom #0
+		// rom bank select
+		romBank = v & 0x1f
+		if romBank == 0 {
+			romBank = 1
+		}
 	case addr < 0x8000:
 		// rom #1-x
 	case addr < 0xa000:

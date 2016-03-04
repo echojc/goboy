@@ -21,6 +21,8 @@ go run *.go <data-file>
 - http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
 - http://www.z80.info/z80code.htm
 - http://imrannazar.com/Gameboy-Z80-Opcode-Map
+- http://gameboy.mongenel.com/dmg/opcodes.html
+- http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
 
 ### DAA
 

@@ -1476,39 +1476,43 @@ func RRA() {
 
 func JP_NN() {
 	pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
-	cycles += 12
+	cycles += 16
 }
 func JP_NZ_NN() {
 	if !fz {
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 16
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func JP_Z_NN() {
 	if fz {
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 16
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func JP_NC_NN() {
 	if !fc {
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 16
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func JP_C_NN() {
 	if fc {
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 16
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func JP_mHL() {
 	pc = uint16(h)<<8 + uint16(l)
@@ -1517,35 +1521,43 @@ func JP_mHL() {
 func JR_sN() {
 	pc += 2
 	pc = uint16(int32(pc) + int32(int8(read(pc-1))))
-	cycles += 8
+	cycles += 12
 }
 func JR_NZ_sN() {
 	pc += 2
 	if !fz {
 		pc = uint16(int32(pc) + int32(int8(read(pc-1))))
+		cycles += 12
+	} else {
+		cycles += 8
 	}
-	cycles += 8
 }
 func JR_Z_sN() {
 	pc += 2
 	if fz {
 		pc = uint16(int32(pc) + int32(int8(read(pc-1))))
+		cycles += 12
+	} else {
+		cycles += 8
 	}
-	cycles += 8
 }
 func JR_NC_sN() {
 	pc += 2
 	if !fc {
 		pc = uint16(int32(pc) + int32(int8(read(pc-1))))
+		cycles += 12
+	} else {
+		cycles += 8
 	}
-	cycles += 8
 }
 func JR_C_sN() {
 	pc += 2
 	if fc {
 		pc = uint16(int32(pc) + int32(int8(read(pc-1))))
+		cycles += 12
+	} else {
+		cycles += 8
 	}
-	cycles += 8
 }
 
 func CALL_NN() {
@@ -1554,7 +1566,7 @@ func CALL_NN() {
 	write(sp-2, uint8(nextPc))
 	sp -= 2
 	pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
-	cycles += 12
+	cycles += 24
 }
 func CALL_NZ_NN() {
 	if !fz {
@@ -1563,10 +1575,11 @@ func CALL_NZ_NN() {
 		write(sp-2, uint8(nextPc))
 		sp -= 2
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 24
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func CALL_Z_NN() {
 	if fz {
@@ -1575,10 +1588,11 @@ func CALL_Z_NN() {
 		write(sp-2, uint8(nextPc))
 		sp -= 2
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 24
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func CALL_NC_NN() {
 	if !fc {
@@ -1587,10 +1601,11 @@ func CALL_NC_NN() {
 		write(sp-2, uint8(nextPc))
 		sp -= 2
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 24
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 func CALL_C_NN() {
 	if fc {
@@ -1599,67 +1614,72 @@ func CALL_C_NN() {
 		write(sp-2, uint8(nextPc))
 		sp -= 2
 		pc = uint16(read(pc+2))<<8 + uint16(read(pc+1))
+		cycles += 24
 	} else {
 		pc += 3
+		cycles += 12
 	}
-	cycles += 12
 }
 
-func RST_00h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0000; cycles += 32 }
-func RST_08h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0008; cycles += 32 }
-func RST_10h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0010; cycles += 32 }
-func RST_18h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0018; cycles += 32 }
-func RST_20h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0020; cycles += 32 }
-func RST_28h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0028; cycles += 32 }
-func RST_30h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0030; cycles += 32 }
-func RST_38h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0038; cycles += 32 }
+func RST_00h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0000; cycles += 16 }
+func RST_08h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0008; cycles += 16 }
+func RST_10h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0010; cycles += 16 }
+func RST_18h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0018; cycles += 16 }
+func RST_20h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0020; cycles += 16 }
+func RST_28h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0028; cycles += 16 }
+func RST_30h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0030; cycles += 16 }
+func RST_38h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0038; cycles += 16 }
 
 func RET() {
 	pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 	sp += 2
-	cycles += 8
+	cycles += 16
 }
 func RET_NZ() {
 	if !fz {
 		pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 		sp += 2
+		cycles += 20
 	} else {
 		pc += 1
+		cycles += 8
 	}
-	cycles += 8
 }
 func RET_Z() {
 	if fz {
 		pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 		sp += 2
+		cycles += 20
 	} else {
 		pc += 1
+		cycles += 8
 	}
-	cycles += 8
 }
 func RET_NC() {
 	if !fc {
 		pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 		sp += 2
+		cycles += 20
 	} else {
 		pc += 1
+		cycles += 8
 	}
-	cycles += 8
 }
 func RET_C() {
 	if fc {
 		pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 		sp += 2
+		cycles += 20
 	} else {
 		pc += 1
+		cycles += 8
 	}
-	cycles += 8
 }
 func RETI() {
 	interruptsEnabled = true
 	pc = uint16(read(sp+1))<<8 + uint16(read(sp))
 	sp += 2
-	cycles += 8
+	cycles += 16
 }
 
 func RLC_B() {

@@ -93,6 +93,8 @@ var disassembly []Disassembly
 var viewDisassemblerPcLock bool
 var viewDisassemblerCursorIndex int
 
+var refreshes int = 0
+
 func updateDisassemblerView(g *gocui.Gui) error {
 	_, maxY := g.Size()
 	height := (maxY - 1) - RegistersViewHeight
@@ -102,7 +104,7 @@ func updateDisassemblerView(g *gocui.Gui) error {
 		g.SetCurrentView(v.Name())
 
 		// init
-		disassembly = renderDisassembly()
+		disassembly = renderDisassembly(0)
 		viewDisassemblerBaseIndex = indexOfDisassemblyForAddress(0x0100)
 		viewDisassemblerPcLock = true
 	} else if err != nil {
@@ -110,17 +112,35 @@ func updateDisassemblerView(g *gocui.Gui) error {
 	}
 	v.Clear()
 
-	if g.CurrentView() == v {
-		v.Title = " disassembler* "
-	} else {
-		v.Title = " disassembler "
-	}
-
 	pcIndex := indexOfDisassemblyForAddress(pc)
 
 	// if pc lock, scroll to pc
 	if viewDisassemblerPcLock && (pcIndex < viewDisassemblerBaseIndex || pcIndex >= viewDisassemblerBaseIndex+height-1) {
 		viewDisassemblerBaseIndex = pcIndex
+	}
+
+	// decide if we need to rerender disassembly
+	if z80SmallestDirtyAddr < disassembly[viewDisassemblerBaseIndex+height-2].addr {
+		splicePoint := sort.Search(len(disassembly), func(i int) bool {
+			return disassembly[i].addr >= z80SmallestDirtyAddr
+		})
+		disassembly = append(disassembly[:splicePoint], renderDisassembly(z80SmallestDirtyAddr)...)
+		z80SmallestDirtyAddr = 0xffff
+
+		// redo all the pc stuff
+		pcIndex = indexOfDisassemblyForAddress(pc)
+		if viewDisassemblerPcLock && (pcIndex < viewDisassemblerBaseIndex || pcIndex >= viewDisassemblerBaseIndex+height-1) {
+			viewDisassemblerBaseIndex = pcIndex
+		}
+
+		refreshes += 1
+	}
+
+	// update title to include rerender count
+	if g.CurrentView() == v {
+		v.Title = fmt.Sprintf(" disassembler* %d/%04x ", refreshes, z80SmallestDirtyAddr)
+	} else {
+		v.Title = fmt.Sprintf(" disassembler %d/%04x ", refreshes, z80SmallestDirtyAddr)
 	}
 
 	// put cursor at the current instruction
@@ -161,7 +181,7 @@ func indexOfDisassemblyForAddress(addr uint16) int {
 // Memory
 //////////////////////////////////////////
 
-var viewMemoryBaseAddr int = 0xfc00
+var viewMemoryBaseAddr int = 0x0000
 
 func updateMemoryView(g *gocui.Gui) error {
 	maxX, maxY := g.Size()

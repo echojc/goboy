@@ -9,9 +9,10 @@ func debuggerStep() {
 }
 
 func debuggerRun() {
-	debuggerStep()
+	viewDisassemblerPcLock = true
+	Step()
 	for !isBreakpoint(pc) {
-		debuggerStep()
+		Step()
 	}
 }
 

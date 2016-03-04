@@ -20,6 +20,8 @@ var cycles uint32
 
 var romBank uint8 = 1
 
+var z80SmallestDirtyAddr uint16 = 0xffff
+
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
@@ -128,6 +130,10 @@ func write(addr uint16, v uint8) {
 		xram[addr-0xff80] = v
 	default:
 		interrupt = v
+	}
+
+	if addr < z80SmallestDirtyAddr {
+		z80SmallestDirtyAddr = addr
 	}
 }
 

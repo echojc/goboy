@@ -12,12 +12,12 @@ type Disassembly struct {
 	pretty string
 }
 
-func renderDisassembly() []Disassembly {
+func renderDisassembly(startAddr uint16) []Disassembly {
 	// allocate enough memory to hold all instructions
-	output := make([]Disassembly, 0, 0x10000/3)
+	output := make([]Disassembly, 0, 0x10000)
 
 	// render all instructions
-	addr := uint(0)
+	addr := uint(startAddr)
 	for i := 0; addr < 0x10000; i++ {
 		raw, pretty, length := Disassemble(uint16(addr))
 		output = append(output, Disassembly{uint16(addr), fmt.Sprintf("%04x    % -12s%s", addr, raw, pretty)})

@@ -1,5 +1,7 @@
 package main
 
+var debuggerBreakpoints []uint16 = []uint16{}
+
 func debuggerStep() {
 	// snap to pc
 	viewDisassemblerPcLock = true
@@ -7,7 +9,29 @@ func debuggerStep() {
 }
 
 func debuggerRun() {
-	for pc != 0x01a1 {
+	debuggerStep()
+	for !isBreakpoint(pc) {
 		debuggerStep()
 	}
+}
+
+func debuggerToggleBreakpoint(addr uint16) {
+	for i := 0; i < len(debuggerBreakpoints); i++ {
+		if debuggerBreakpoints[i] == addr {
+			// delete
+			debuggerBreakpoints = append(debuggerBreakpoints[:i], debuggerBreakpoints[i+1:]...)
+			return
+		}
+	}
+	// didn't find it, append
+	debuggerBreakpoints = append(debuggerBreakpoints, addr)
+}
+
+func isBreakpoint(addr uint16) bool {
+	for _, v := range debuggerBreakpoints {
+		if addr == v {
+			return true
+		}
+	}
+	return false
 }

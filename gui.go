@@ -20,11 +20,11 @@ func guiLayout(g *gocui.Gui) error {
 		return err
 	}
 
-	if err := updateDisassemblerView(g); err != nil {
+	if err := updateMemoryView(g); err != nil {
 		return err
 	}
 
-	if err := updateMemoryView(g); err != nil {
+	if err := updateDisassemblerView(g); err != nil {
 		return err
 	}
 
@@ -91,6 +91,7 @@ func b2i(b bool) int {
 var viewDisassemblerBaseIndex int
 var disassembly []Disassembly
 var viewDisassemblerPcLock bool
+var viewDisassemblerCursorIndex int
 
 func updateDisassemblerView(g *gocui.Gui) error {
 	_, maxY := g.Size()
@@ -123,17 +124,28 @@ func updateDisassemblerView(g *gocui.Gui) error {
 	}
 
 	// put cursor at the current instruction
-	cursorIndex := pcIndex - viewDisassemblerBaseIndex
-	if cursorIndex >= 0 && cursorIndex < height {
-		v.SetCursor(0, cursorIndex)
-		v.Highlight = true
-	} else {
-		v.Highlight = false
-	}
+	v.SetCursor(0, viewDisassemblerCursorIndex)
+	v.Highlight = true
 
 	// print the disassembly
+	fmtString := fmt.Sprintf("\033[%%dm%%c %% -%ds\n", DisassemblerViewWidth)
 	for i := viewDisassemblerBaseIndex; i < viewDisassemblerBaseIndex+height && i < len(disassembly); i++ {
-		fmt.Fprintf(v, " %s\n", disassembly[i].pretty)
+		// bg color for breakpoints/pc
+		bgColor := 0
+		switch {
+		case pc == disassembly[i].addr:
+			bgColor = 42 // bg green
+		case isBreakpoint(disassembly[i].addr):
+			bgColor = 41 // bg red
+		}
+
+		// additional indicator of current pc
+		arrow := ' '
+		if pc == disassembly[i].addr {
+			arrow = '>'
+		}
+
+		fmt.Fprintf(v, fmtString, bgColor, arrow, disassembly[i].pretty)
 	}
 
 	return nil
@@ -279,6 +291,17 @@ func guiSetKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlU, gocui.ModNone, guiScroll("u")); err != nil {
 		return err
 	}
+	if err := g.SetKeybinding("", 'j', gocui.ModNone, guiScroll("j")); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", 'k', gocui.ModNone, guiScroll("k")); err != nil {
+		return err
+	}
+
+	// debugger
+	if err := g.SetKeybinding("", 'b', gocui.ModNone, actionToggleBreakpoint()); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -317,12 +340,22 @@ func guiScroll(key string) gocui.KeybindingHandler {
 				viewDisassemblerBaseIndex += height / 2
 			case "u":
 				viewDisassemblerBaseIndex -= height / 2
+			case "j":
+				viewDisassemblerCursorIndex += 1
+			case "k":
+				viewDisassemblerCursorIndex -= 1
 			}
 			if viewDisassemblerBaseIndex < 0 {
 				viewDisassemblerBaseIndex = 0
 			}
 			if viewDisassemblerBaseIndex > len(disassembly)-height+1 {
 				viewDisassemblerBaseIndex = len(disassembly) - height + 1
+			}
+			if viewDisassemblerCursorIndex < 0 {
+				viewDisassemblerCursorIndex = 0
+			}
+			if viewDisassemblerCursorIndex > height-1 {
+				viewDisassemblerCursorIndex = height - 2
 			}
 			viewDisassemblerPcLock = false
 		case "memory":
@@ -344,6 +377,14 @@ func guiScroll(key string) gocui.KeybindingHandler {
 			}
 		}
 
+		return nil
+	}
+}
+
+func actionToggleBreakpoint() gocui.KeybindingHandler {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		addr := disassembly[viewDisassemblerBaseIndex+viewDisassemblerCursorIndex].addr
+		debuggerToggleBreakpoint(addr)
 		return nil
 	}
 }

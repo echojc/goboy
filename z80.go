@@ -1621,14 +1621,70 @@ func CALL_C_NN() {
 	}
 }
 
-func RST_00h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0000; cycles += 16 }
-func RST_08h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0008; cycles += 16 }
-func RST_10h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0010; cycles += 16 }
-func RST_18h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0018; cycles += 16 }
-func RST_20h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0020; cycles += 16 }
-func RST_28h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0028; cycles += 16 }
-func RST_30h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0030; cycles += 16 }
-func RST_38h() { write(sp-1, uint8(pc>>8)); write(sp-2, uint8(pc)); sp -= 2; pc = 0x0038; cycles += 16 }
+func RST_00h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0000
+	cycles += 16
+}
+func RST_08h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0008
+	cycles += 16
+}
+func RST_10h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0010
+	cycles += 16
+}
+func RST_18h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0018
+	cycles += 16
+}
+func RST_20h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0020
+	cycles += 16
+}
+func RST_28h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0028
+	cycles += 16
+}
+func RST_30h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0030
+	cycles += 16
+}
+func RST_38h() {
+	pc++
+	write(sp-1, uint8(pc>>8))
+	write(sp-2, uint8(pc))
+	sp -= 2
+	pc = 0x0038
+	cycles += 16
+}
 
 func RET() {
 	pc = uint16(read(sp+1))<<8 + uint16(read(sp))

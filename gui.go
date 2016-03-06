@@ -323,6 +323,10 @@ func guiSetKeybindings(g *gocui.Gui) error {
 		return err
 	}
 
+	if err := g.SetKeybinding("", gocui.KeyCtrlT, gocui.ModNone, action(ExportTileData)); err != nil {
+		return err
+	}
+
 	return nil
 }
 

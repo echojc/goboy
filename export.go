@@ -8,6 +8,25 @@ import (
 	"os"
 )
 
+func ExportTileMap0() {
+	file, err := os.Create("/tmp/tile_map_0.png")
+	if err != nil {
+		log.Panicln(err)
+	}
+	defer file.Close()
+
+	out := image.NewGray(image.Rect(0, 0, 32*8, 32*8))
+
+	for y := 0; y < 32; y++ {
+		for x := 0; x < 32; x++ {
+			tileIndex := read(uint16(0x9800 + (y*32 + x)))
+			copyTile(out, getTile(tileIndex), x, y)
+		}
+	}
+
+	png.Encode(file, out)
+}
+
 func ExportTileData() {
 	file, err := os.Create("/tmp/tile_data.png")
 	if err != nil {
@@ -32,6 +51,18 @@ func copyTile(out *image.Gray, tile *image.Gray, x int, y int) {
 			out.SetGray((x*8)+i, (y*8)+j, tile.GrayAt(i, j))
 		}
 	}
+}
+
+func getTile(index uint8) *image.Gray {
+	// TODO read which tile memory bank to use
+	var addr uint16
+	switch {
+	case index < 0x80:
+		addr = 0x9000 + (uint16(index) << 4)
+	default:
+		addr = 0x8000 + (uint16(index) << 4)
+	}
+	return convertTile(addr)
 }
 
 func convertTile(addr uint16) *image.Gray {

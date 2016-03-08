@@ -28,16 +28,6 @@ func guiInit() (*gocui.Gui, error) {
 	return g, nil
 }
 
-func guiMainLoop(g *gocui.Gui) error {
-	result := make(chan error, 1)
-
-	go func(result chan error) {
-		result <- g.MainLoop()
-	}(result)
-
-	return <-result
-}
-
 func guiQuit(g *gocui.Gui, v *gocui.View) error {
 	guiCompleted = true
 	return gocui.ErrQuit

@@ -4,14 +4,13 @@ import (
 	"image"
 	"image/color"
 	"image/png"
-	"log"
 	"os"
 )
 
 func ExportTileMap0() {
 	file, err := os.Create("/tmp/tile_map_0.png")
 	if err != nil {
-		log.Panicln(err)
+		panic(err)
 	}
 	defer file.Close()
 
@@ -30,7 +29,7 @@ func ExportTileMap0() {
 func ExportTileData() {
 	file, err := os.Create("/tmp/tile_data.png")
 	if err != nil {
-		log.Panicln(err)
+		panic(err)
 	}
 	defer file.Close()
 

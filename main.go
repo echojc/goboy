@@ -13,7 +13,7 @@ func main() {
 		log.Println("no input file")
 	} else {
 		if data, err := ioutil.ReadFile(os.Args[1]); err != nil {
-			log.Fatal(err)
+			panic(err)
 		} else {
 			LoadRom(data)
 		}

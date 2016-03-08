@@ -7,6 +7,42 @@ import (
 	"github.com/deweerdt/gocui"
 )
 
+var guiCompleted bool = false
+
+func guiInit() (*gocui.Gui, error) {
+	g := gocui.NewGui()
+	if err := g.Init(); err != nil {
+		return nil, err
+	}
+
+	g.SetLayout(guiLayout)
+
+	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, guiQuit); err != nil {
+		return nil, err
+	}
+
+	if err := guiSetKeybindings(g); err != nil {
+		return nil, err
+	}
+
+	return g, nil
+}
+
+func guiMainLoop(g *gocui.Gui) error {
+	result := make(chan error, 1)
+
+	go func(result chan error) {
+		result <- g.MainLoop()
+	}(result)
+
+	return <-result
+}
+
+func guiQuit(g *gocui.Gui, v *gocui.View) error {
+	guiCompleted = true
+	return gocui.ErrQuit
+}
+
 //////////////////////////////////////////
 // Render entry point
 //////////////////////////////////////////

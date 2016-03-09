@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"runtime"
 
 	"github.com/deweerdt/gocui"
 	"github.com/go-gl/gl/v2.1/gl"
@@ -11,6 +12,10 @@ import (
 )
 
 const EnableGl bool = true
+
+func init() {
+	runtime.LockOSThread()
+}
 
 func main() {
 

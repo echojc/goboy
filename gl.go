@@ -6,52 +6,72 @@ import (
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
 
+var texTileData1 uint32
+
 func glCreateWindow() (*glfw.Window, error) {
 	glfw.WindowHint(glfw.Resizable, glfw.False)
 	glfw.WindowHint(glfw.ContextVersionMajor, 2)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 
-	window, err := glfw.CreateWindow(160, 144, "goboy", nil, nil)
+	window, err := glfw.CreateWindow(320, 288, "goboy", nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	window.MakeContextCurrent()
 
-	gl.Enable(gl.DEPTH_TEST)
-
 	gl.ClearColor(1.0, 1.0, 1.0, 0.0)
-	gl.ClearDepth(1)
-	gl.DepthFunc(gl.LEQUAL)
 
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
 	gl.Ortho(0.0, 160.0, 144.0, 0.0, 1.0, -1.0)
+	gl.MatrixMode(gl.MODELVIEW)
+	gl.LoadIdentity()
+
+	gl.Enable(gl.TEXTURE_2D)
+	gl.GenTextures(1, &texTileData1)
 
 	return window, nil
 }
 
 func glMainLoop(window *glfw.Window, g *gocui.Gui) {
-	var r float32
+	updated := false
 
 	for !window.ShouldClose() && !guiCompleted {
-		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		gl.MatrixMode(gl.MODELVIEW)
-		gl.LoadIdentity()
+		if pc == 0x0296 && !updated {
+			UpdateTileData1()
+			updated = true
+		}
 
-		gl.Translatef(80, 72, 0)
-		gl.Rotatef(r, 0, 0, 1)
-		gl.Translatef(-80, -72, 0)
-		r += 1
+		// tile map 0, tile data 1
+		gl.BindTexture(gl.TEXTURE_2D, texTileData1)
+		var x, y int32
+		for y = 0; y < 0x20; y++ {
+			for x = 0; x < 0x20; x++ {
+				addr := uint16(0x9800 + (y*0x20 + x))
+				tile := read(addr)
+				tileX := float32(tile&0x0f) / 16
+				tileY := float32(tile>>4) / 16
+				stride := float32(1) / 16
 
-		gl.Begin(gl.TRIANGLES)
-		gl.Color3f(1, 0, 0)
-		gl.Vertex2f(80, 20)
-		gl.Color3f(0, 1, 0)
-		gl.Vertex2f(50, 120)
-		gl.Color3f(0, 0, 1)
-		gl.Vertex2f(110, 120)
-		gl.End()
+				gl.Begin(gl.QUADS)
+
+				gl.TexCoord2f(tileX, tileY)
+				gl.Vertex2i(x*8, y*8)
+
+				gl.TexCoord2f(tileX, tileY+stride)
+				gl.Vertex2i(x*8, (y+1)*8)
+
+				gl.TexCoord2f(tileX+stride, tileY+stride)
+				gl.Vertex2i((x+1)*8, (y+1)*8)
+
+				gl.TexCoord2f(tileX+stride, tileY)
+				gl.Vertex2i((x+1)*8, y*8)
+
+				gl.End()
+			}
+		}
 
 		window.SwapBuffers()
 		glfw.PollEvents()
@@ -61,4 +81,56 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 	g.Execute(func(g *gocui.Gui) error {
 		return gocui.ErrQuit
 	})
+}
+
+func UpdateTileData1() {
+	// cache palette as rgb values
+	palette := getCurrentPalette()
+
+	// decode texture data
+	var texture [0x4000]uint8
+	for id := 0; id < 0x100; id++ {
+		var addr uint16
+		switch {
+		case id < 0x80:
+			addr = uint16(0x9000 + (id << 4))
+		default:
+			addr = uint16(0x8000 + (id << 4))
+		}
+
+		for y := 0; y < 8; y++ {
+			// read bit values
+			l := read(addr)
+			addr++
+			h := read(addr)
+			addr++
+
+			for x := 0; x < 8; x++ {
+				bit := uint(7 - x)
+				paletteIndex := ((l >> bit) & 0x01) | (((h >> bit) & 0x01) << 1)
+
+				offsetY := (id>>4)*0x400 + y*0x80
+				offsetX := (id&0x0f)*8 + x
+				texture[offsetY+offsetX] = palette[paletteIndex]
+			}
+		}
+	}
+
+	// blit tile data
+	gl.BindTexture(gl.TEXTURE_2D, texTileData1)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 128, 128, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, gl.Ptr(&texture[0]))
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+}
+
+func getCurrentPalette() [4]uint8 {
+	//colors := [4]uint8{0xff, 0xb6, 0x6d, 0x00} // 3,3,2 encoded
+	colors := [4]uint8{0xff, 0xaa, 0x55, 0x00}
+	palette := read(0xff47)
+	return [4]uint8{
+		colors[palette&0x03],
+		colors[(palette>>2)&0x03],
+		colors[(palette>>4)&0x03],
+		colors[(palette>>6)&0x03],
+	}
 }

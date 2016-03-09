@@ -163,9 +163,11 @@ func CB() {
 	cbcodes[read(pc+1)]()
 }
 
-func NOP()  { cycles += 4; pc += 1 }
-func HALT() { halted = true; cycles += 4; pc += 1 }
-func STOP() { stopped = true; cycles += 4; pc += 1 }
+func NOP() { cycles += 4; pc += 1 }
+
+// intentionally don't advance PC when halting/stopping
+func HALT() { halted = true; cycles += 4 }
+func STOP() { stopped = true; cycles += 4 }
 
 func EI() { interruptsEnabled = true; cycles += 4; pc += 1 }
 func DI() { interruptsEnabled = false; cycles += 4; pc += 1 }

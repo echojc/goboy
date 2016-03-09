@@ -11,7 +11,7 @@ func debuggerStep() {
 func debuggerRun() {
 	viewDisassemblerPcLock = true
 	Step()
-	for !isBreakpoint(pc) {
+	for !isBreakpoint(pc) && !stopped && !halted {
 		Step()
 	}
 }

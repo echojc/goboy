@@ -22,6 +22,7 @@ func main() {
 	// read some data off disk
 	if len(os.Args) < 1 {
 		log.Println("no input file")
+		os.Exit(2)
 	} else {
 		if data, err := ioutil.ReadFile(os.Args[1]); err != nil {
 			panic(err)
@@ -29,6 +30,15 @@ func main() {
 			LoadRom(data)
 		}
 	}
+
+	// set up logger
+	logFile, err := os.OpenFile("goboy.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0664)
+	if err != nil {
+		panic(err)
+	}
+	defer logFile.Close()
+	log.SetFlags(log.LstdFlags)
+	log.SetOutput(logFile)
 
 	// init gocui
 	g, err := guiInit()

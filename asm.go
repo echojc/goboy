@@ -65,14 +65,14 @@ func Disassemble(addr uint16) (string, string, uint) {
 				v = 0x100 - v
 				n = "-"
 			}
-			parts[i] = fmt.Sprintf("%s%02xh", n, v)
+			parts[i] = fmt.Sprintf("$%s%02x", n, v)
 
 			length += 1
 			raw += fmt.Sprintf(" %02X", rawV)
 		} else if parts[i] == "NN" {
 			rawH := read(addr + 2)
 			rawL := read(addr + 1)
-			parts[i] = fmt.Sprintf("%04xh", uint16(rawH)<<8+uint16(rawL))
+			parts[i] = fmt.Sprintf("$%04x", uint16(rawH)<<8+uint16(rawL))
 
 			length += 2
 			raw += fmt.Sprintf(" %02X %02X", rawL, rawH)

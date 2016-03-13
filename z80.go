@@ -28,7 +28,15 @@ const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
 func Step() {
-	opcodes[read(pc)]()
+	handleInterrupts()
+
+	if !halted && !stopped {
+		opcodes[read(pc)]()
+	} else {
+		// essentially a nop
+		cycles += 4
+	}
+
 	cycles %= cyclesPerFrame
 }
 
@@ -129,6 +137,47 @@ func write(addr uint16, v uint8) {
 	}
 }
 
+const (
+	INT_VBLANK uint16 = 0
+	INT_LCDC   uint16 = 1
+	INT_TIMER  uint16 = 2
+	INT_SERIAL uint16 = 3
+	INT_KEY    uint16 = 4
+)
+
+func triggerInterrupt(interrupt uint16) {
+	// set IF register
+	write(0xff0f, read(0xff0f)|(1<<interrupt))
+}
+
+func handleInterrupts() {
+	if !interruptsEnabled {
+		return
+	}
+
+	flags := read(0xff0f)
+	masked := interrupt & flags
+	for i := INT_VBLANK; i <= INT_KEY; i++ {
+		if ((masked >> i) & 0x01) > 0 {
+			// disable interrupts and reset IF (but don't touch IE)
+			interruptsEnabled = false
+			write(0xff0f, 0)
+
+			// push pc and jump
+			write(sp-1, uint8(pc>>8))
+			write(sp-2, uint8(pc&0xff))
+			sp -= 2
+			pc = 0x0040 + (0x08 * i)
+
+			// reset halted
+			halted = false
+
+			// cycles?
+			break
+		}
+	}
+}
+
 var opcodes [0x100]func() = [0x100]func(){
 	NOP, LD_BC_NN, LD_mBC_A, INC_BC, INC_B, DEC_B, LD_B_N, RLCA, LD_mNN_SP, ADD_HL_BC, LD_A_mBC, DEC_BC, INC_C, DEC_C, LD_C_N, RRCA,
 	STOP, LD_DE_NN, LD_mDE_A, INC_DE, INC_D, DEC_D, LD_D_N, RLA, JR_sN, ADD_HL_DE, LD_A_mDE, DEC_DE, INC_E, DEC_E, LD_E_N, RRA,
@@ -173,9 +222,8 @@ func CB() {
 
 func NOP() { cycles += 4; pc += 1 }
 
-// intentionally don't advance PC when halting/stopping
-func HALT() { halted = true; cycles += 4 }
-func STOP() { stopped = true; cycles += 4 }
+func HALT() { halted = true; pc += 1; cycles += 4 }
+func STOP() { stopped = true; pc += 1; cycles += 4 }
 
 func EI() { interruptsEnabled = true; cycles += 4; pc += 1 }
 func DI() { interruptsEnabled = false; cycles += 4; pc += 1 }

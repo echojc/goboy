@@ -299,6 +299,9 @@ func updateMiscView(g *gocui.Gui) error {
 	v.Clear()
 
 	fmt.Fprintf(v, " clks: % 5d\n", cycles)
+	if halted {
+		fmt.Fprintf(v, " halted")
+	}
 
 	return nil
 }
@@ -356,6 +359,9 @@ func guiSetKeybindings(g *gocui.Gui) error {
 	if err := g.SetKeybinding("", gocui.KeyCtrlM, gocui.ModNone, action(ExportTileMap0)); err != nil {
 		return err
 	}
+
+	// interrupts
+	g.SetKeybinding("", gocui.KeyCtrlV, gocui.ModNone, action(func() { triggerInterrupt(INT_VBLANK) }))
 
 	return nil
 }

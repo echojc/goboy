@@ -6,7 +6,7 @@ func ioP1() uint8 {
 }
 
 func ioLy() uint8 {
-	return uint8(cycles / cyclesPerLine)
+	return uint8(cyclesWrapped / cyclesPerLine)
 }
 
 func ioLcdMode() uint8 {
@@ -14,7 +14,7 @@ func ioLcdMode() uint8 {
 	if y >= 144 { // vblank
 		return 1
 	} else {
-		x := cycles - (cyclesPerLine * uint32(y))
+		x := cyclesWrapped - (cyclesPerLine * uint32(y))
 		switch {
 		case x < 80: // oam
 			return 2

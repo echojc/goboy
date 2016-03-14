@@ -16,20 +16,20 @@ var halted bool
 var stopped bool
 var interruptsEnabled bool
 
-var cycles uint32
+var cycles uint64
+var cyclesWrapped uint32
 
 var romBank uint8 = 1
 
 var z80SmallestDirtyAddr uint16 = 0xffff
 var z80TileData0Dirty bool = false
 var z80TileData1Dirty bool = false
+var z80LastLy uint8 = 0
 
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
 func Step() {
-	handleInterrupts()
-
 	if !halted && !stopped {
 		opcodes[read(pc)]()
 	} else {
@@ -37,7 +37,10 @@ func Step() {
 		cycles += 4
 	}
 
-	cycles %= cyclesPerFrame
+	cyclesWrapped = uint32(cycles % cyclesPerFrame)
+
+	setLcdInterrupts()
+	handleInterrupts()
 }
 
 func LoadRom(data []uint8) {
@@ -150,6 +153,15 @@ func triggerInterrupt(interrupt uint16) {
 	write(0xff0f, read(0xff0f)|(1<<interrupt))
 }
 
+func setLcdInterrupts() {
+	// vblank
+	ly := ioLy()
+	if z80LastLy == 143 && ly == 144 {
+		write(0xff0f, read(0xff0f)|(1<<INT_VBLANK))
+	}
+	z80LastLy = ly
+}
+
 func handleInterrupts() {
 	if !interruptsEnabled {
 		return
@@ -226,7 +238,7 @@ func HALT() { halted = true; pc += 1; cycles += 4 }
 func STOP() { stopped = true; pc += 1; cycles += 4 }
 
 func EI() { interruptsEnabled = true; cycles += 4; pc += 1 }
-func DI() { interruptsEnabled = false; cycles += 4; pc += 1 }
+func DI() { interruptsEnabled = false; write(0xff0f, 0); cycles += 4; pc += 1 }
 
 func LD_BC_NN() { b = read(pc + 2); c = read(pc + 1); cycles += 12; pc += 3 }
 func LD_DE_NN() { d = read(pc + 2); e = read(pc + 1); cycles += 12; pc += 3 }

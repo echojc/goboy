@@ -40,11 +40,14 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 	for !window.ShouldClose() && !guiCompleted {
 
 		// rerender textures if necessary
-		if z80TileData0Dirty {
-			UpdateTileData0()
-		}
-		if z80TileData1Dirty {
-			UpdateTileData1()
+		// only rerender if lcd is enabled
+		if (read(0xff40) & 0x80) > 0 {
+			if z80TileData0Dirty {
+				UpdateTileData0()
+			}
+			if z80TileData1Dirty {
+				UpdateTileData1()
+			}
 		}
 
 		// clear screen

@@ -1,12 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/deweerdt/gocui"
 	"github.com/go-gl/gl/v2.1/gl"
 	"github.com/go-gl/glfw/v3.1/glfw"
 )
+
+const windowTitleFormat = "goboy vfps:%.01f cfps:%.01f"
+
+var glFps Fps
+var glFrameCount uint64
 
 var texTileData1 uint32
 
@@ -15,7 +21,8 @@ func glCreateWindow() (*glfw.Window, error) {
 	glfw.WindowHint(glfw.ContextVersionMajor, 2)
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 
-	window, err := glfw.CreateWindow(320, 288, "goboy", nil, nil)
+	title := fmt.Sprintf(windowTitleFormat, 0.0, 0.0)
+	window, err := glfw.CreateWindow(320, 288, title, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +87,14 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 
 				gl.End()
 			}
+		}
+
+		glFrameCount++
+		if glFrameCount%60 == 0 {
+			glFps.Add(glFrameCount)
+
+			title := fmt.Sprintf(windowTitleFormat, glFps.Current(), z80Fps.Current())
+			window.SetTitle(title)
 		}
 
 		window.SwapBuffers()

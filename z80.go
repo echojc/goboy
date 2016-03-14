@@ -26,6 +26,9 @@ var z80TileData0Dirty bool = false
 var z80TileData1Dirty bool = false
 var z80LastLy uint8 = 0
 
+var z80Fps Fps
+var z80FrameCount uint64
+
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
@@ -157,6 +160,12 @@ func setLcdInterrupts() {
 	// vblank
 	ly := ioLy()
 	if z80LastLy == 143 && ly == 144 {
+		// track fps
+		z80FrameCount++
+		if z80FrameCount%60 == 0 {
+			z80Fps.Add(z80FrameCount)
+		}
+
 		write(0xff0f, read(0xff0f)|(1<<INT_VBLANK))
 	}
 	z80LastLy = ly

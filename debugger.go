@@ -19,7 +19,7 @@ const cyclesPerNanosecond = 0.004194304
 
 func debuggerLoop(events <-chan DebuggerEvent) {
 	running := false
-	ticker := time.Tick(time.Millisecond)
+	ticker := time.Tick(3 * time.Millisecond)
 	var startCycle uint64
 	var startTime int64
 
@@ -46,12 +46,13 @@ func debuggerLoop(events <-chan DebuggerEvent) {
 		case <-ticker:
 			if running {
 				for {
-					// check for breakpoints
+					// check for breakpoints - stop running if found
 					if isBreakpoint(pc) {
+						running = false
 						break
 					}
 
-					// if we're ahead of where we're meant to be, take a break
+					// if we're ahead of where we're meant to be, yield for now
 					now := time.Now().UnixNano()
 					expectedCycles := uint64(float64(now-startTime) * cyclesPerNanosecond)
 					if cycles > startCycle+expectedCycles {
@@ -67,7 +68,7 @@ func debuggerLoop(events <-chan DebuggerEvent) {
 }
 
 func debuggerInit() {
-	debuggerEvents = make(chan DebuggerEvent, 1000)
+	debuggerEvents = make(chan DebuggerEvent, 10)
 	go debuggerLoop(debuggerEvents)
 }
 

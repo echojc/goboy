@@ -40,6 +40,9 @@ func main() {
 	log.SetFlags(log.LstdFlags)
 	log.SetOutput(logFile)
 
+	// start debugger
+	debuggerInit()
+
 	// init gocui
 	g, err := guiInit()
 	if err != nil {
@@ -78,4 +81,7 @@ func main() {
 			panic(err)
 		}
 	}
+
+	// stop debugger if necessary
+	debuggerQuit()
 }

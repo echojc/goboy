@@ -298,7 +298,6 @@ func updateMiscView(g *gocui.Gui) error {
 	}
 	v.Clear()
 
-	fmt.Fprintf(v, " clks: % 5d\n", cycles)
 	if halted {
 		fmt.Fprintf(v, " halted")
 	}
@@ -316,6 +315,9 @@ func guiSetKeybindings(g *gocui.Gui) error {
 		return err
 	}
 	if err := g.SetKeybinding("", 'r', gocui.ModNone, action(debuggerRun)); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyCtrlB, gocui.ModNone, action(debuggerBreak)); err != nil {
 		return err
 	}
 

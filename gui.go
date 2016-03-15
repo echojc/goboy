@@ -311,13 +311,13 @@ func updateMiscView(g *gocui.Gui) error {
 
 func guiSetKeybindings(g *gocui.Gui) error {
 	// debugging
-	if err := g.SetKeybinding("", 'n', gocui.ModNone, action(debuggerStep)); err != nil {
+	if err := g.SetKeybinding("", 'n', gocui.ModNone, actionGui(debuggerStep)); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("", 'r', gocui.ModNone, action(debuggerRun)); err != nil {
+	if err := g.SetKeybinding("", 'r', gocui.ModNone, actionGui(debuggerRun)); err != nil {
 		return err
 	}
-	if err := g.SetKeybinding("", gocui.KeyCtrlB, gocui.ModNone, action(debuggerBreak)); err != nil {
+	if err := g.SetKeybinding("", gocui.KeyCtrlB, gocui.ModNone, actionGui(debuggerBreak)); err != nil {
 		return err
 	}
 
@@ -371,6 +371,13 @@ func guiSetKeybindings(g *gocui.Gui) error {
 func action(fn func()) gocui.KeybindingHandler {
 	return func(g *gocui.Gui, v *gocui.View) error {
 		fn()
+		return nil
+	}
+}
+
+func actionGui(fn func(g *gocui.Gui)) gocui.KeybindingHandler {
+	return func(g *gocui.Gui, v *gocui.View) error {
+		fn(g)
 		return nil
 	}
 }

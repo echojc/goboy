@@ -47,10 +47,11 @@ func glCreateWindow() (*glfw.Window, error) {
 func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 
 	for !window.ShouldClose() && !guiCompleted {
+		lcdc := read(REG_LCDC)
 
 		// rerender textures if necessary
 		// only rerender if lcd is enabled
-		if (read(REG_LCDC) & 0x80) > 0 {
+		if isBitSet(lcdc, LCDC_ENABLE) {
 			if z80TileData0Dirty {
 				UpdateTileData0()
 			}
@@ -62,13 +63,24 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 		// clear screen
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		// todo: bind the correct texture based on LCDC
-		// tile map 0, tile data 1
-		gl.BindTexture(gl.TEXTURE_2D, texTileData1)
+		// bind the correct texture based on LCDC
+		var texTileData = texTileData1
+		if isBitSet(lcdc, LCDC_BG_WINDOW_TILE_DATA) {
+			texTileData = texTileData0
+		}
+		gl.BindTexture(gl.TEXTURE_2D, texTileData)
+
+		// choose bg tile map based on LCDC
+		var tileMapBaseAddr int32 = 0x9800
+		if isBitSet(lcdc, LCDC_BG_TILE_MAP) {
+			tileMapBaseAddr = 0x9c00
+		}
+
+		// render bg
 		var x, y int32
 		for y = 0; y < 0x20; y++ {
 			for x = 0; x < 0x20; x++ {
-				addr := uint16(0x9800 + (y*0x20 + x))
+				addr := uint16(tileMapBaseAddr + (y*0x20 + x))
 				tile := read(addr)
 				tileX := float32(tile&0x0f) / 16
 				tileY := float32(tile>>4) / 16

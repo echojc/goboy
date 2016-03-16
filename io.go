@@ -9,6 +9,7 @@ const (
 	REG_SCX  uint16 = 0xff43
 	REG_LY   uint16 = 0xff44
 	REG_LYC  uint16 = 0xff45
+	REG_DMA  uint16 = 0xff46
 	REG_BGP  uint16 = 0xff47
 	REG_OBP1 uint16 = 0xff48
 	REG_OBP2 uint16 = 0xff49

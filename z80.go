@@ -9,6 +9,7 @@ var rom []uint8
 var ram [0x2000]uint8
 var vram [0x2000]uint8
 var io [0x4c]uint8
+var oam [0xa0]uint8
 var xram [0x7f]uint8
 
 var interrupt uint8
@@ -31,6 +32,10 @@ var z80LastLcdMode uint8 = 0
 var z80Fps Fps
 var z80FrameCount uint64
 
+var z80DmaStartAddr uint16 = 0
+var z80DmaBytesLeft uint64 = 0
+var z80DmaStartCycle uint64 = 0
+
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
@@ -43,6 +48,8 @@ func Step() {
 	}
 
 	cyclesWrapped = uint32(cycles % cyclesPerFrame)
+
+	handleDma()
 
 	setLcdInterrupts()
 	handleInterrupts()
@@ -73,7 +80,7 @@ func read(addr uint16) uint8 {
 		return ram[addr-0xe000]
 	case addr < 0xfea0:
 		// oam
-		return 0
+		return oam[addr-0xfe00]
 	case addr < 0xff00:
 		// unmapped
 		return 0
@@ -127,11 +134,19 @@ func write(addr uint16, v uint8) {
 		ram[addr-0xe000] = v
 	case addr < 0xfea0:
 		// oam
+		oam[addr-0xfe00] = v
 	case addr < 0xff00:
 		// unmapped
 	case addr < 0xff4c:
 		// io registers
-		io[addr-0xff00] = v
+		switch addr {
+		case REG_DMA:
+			z80DmaStartAddr = uint16(v) << 8
+			z80DmaBytesLeft = 0xa0
+			z80DmaStartCycle = cycles
+		default:
+			io[addr-0xff00] = v
+		}
 	case addr < 0xff80:
 		// unmapped
 	case addr < 0xffff:
@@ -142,6 +157,18 @@ func write(addr uint16, v uint8) {
 
 	if addr < z80SmallestDirtyAddr {
 		z80SmallestDirtyAddr = addr
+	}
+}
+
+func handleDma() {
+	if z80DmaBytesLeft == 0 {
+		return
+	}
+
+	targetBytes := (cycles - z80DmaStartCycle) / 4
+	for ; z80DmaBytesLeft > 0 && (0xa0-z80DmaBytesLeft) < targetBytes; z80DmaBytesLeft-- {
+		offset := uint16(0xa0 - z80DmaBytesLeft)
+		write(0xfe00+offset, read(z80DmaStartAddr+offset))
 	}
 }
 

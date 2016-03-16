@@ -5,6 +5,8 @@ const (
 	REG_IF   uint16 = 0xff0f
 	REG_LCDC uint16 = 0xff40
 	REG_STAT uint16 = 0xff41
+	REG_SCY  uint16 = 0xff42
+	REG_SCX  uint16 = 0xff43
 	REG_LY   uint16 = 0xff44
 	REG_LYC  uint16 = 0xff45
 	REG_BGP  uint16 = 0xff47

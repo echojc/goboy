@@ -173,16 +173,16 @@ func setLcdInterrupts() {
 
 	mode := ioLcdMode()
 	stat := read(REG_STAT)
-	if (stat & STAT_LYC) > 0 {
+	if isBitSet(stat, STAT_LYC) {
 		lyc := read(REG_LYC)
 		if z80LastLy != lyc && ly == lyc {
 			write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
 		}
-	} else if (stat&STAT_OAM) > 0 && z80LastLcdMode != STAT_MODE_OAM && mode == STAT_MODE_OAM {
+	} else if isBitSet(stat, STAT_OAM) && z80LastLcdMode != STAT_MODE_OAM && mode == STAT_MODE_OAM {
 		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
-	} else if (stat&STAT_VBLANK) > 0 && z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
+	} else if isBitSet(stat, STAT_VBLANK) && z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
 		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
-	} else if (stat&STAT_HBLANK) > 0 && z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
+	} else if isBitSet(stat, STAT_HBLANK) && z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
 		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
 	}
 

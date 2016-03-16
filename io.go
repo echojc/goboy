@@ -12,16 +12,33 @@ const (
 	REG_OBP2 uint16 = 0xff49
 	REG_IE   uint16 = 0xffff
 
-	STAT_HBLANK uint8 = 0x08
-	STAT_VBLANK uint8 = 0x10
-	STAT_OAM    uint8 = 0x20
+	LCDC_ENABLE              uint8 = 0x80
+	LCDC_WINDOW_TILE_MAP     uint8 = 0x40 // 0 = 0x9800, 1 = 0x9c00
+	LCDC_WINDOW_ENABLE       uint8 = 0x20
+	LCDC_BG_WINDOW_TILE_DATA uint8 = 0x10 // 0 = 0x9000, 1 = 0x8000
+	LCDC_BG_TILE_MAP         uint8 = 0x08 // 0 = 0x9800, 1 = 0x9c00
+	LCDC_OBJ_SIZE            uint8 = 0x04 // 0 = 8x8, 1 = 8x16
+	LCDC_OBJ_ENABLE          uint8 = 0x02
+	LCDC_BG_WINDOW_ENABLE    uint8 = 0x01
+
 	STAT_LYC    uint8 = 0x40
+	STAT_OAM    uint8 = 0x20
+	STAT_VBLANK uint8 = 0x10
+	STAT_HBLANK uint8 = 0x08
 
 	STAT_MODE_HBLANK uint8 = 0x00
 	STAT_MODE_VBLANK uint8 = 0x01
 	STAT_MODE_OAM    uint8 = 0x02
 	STAT_MODE_LCD    uint8 = 0x03
 )
+
+func isBitSetAddr(addr uint16, bit uint8) bool {
+	return (read(addr) & bit) > 0
+}
+
+func isBitSet(v uint8, bit uint8) bool {
+	return (v & bit) > 0
+}
 
 func ioP1() uint8 {
 	// TODO keys (0 = down, 1 = up)

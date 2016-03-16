@@ -24,7 +24,9 @@ var romBank uint8 = 1
 var z80SmallestDirtyAddr uint16 = 0xffff
 var z80TileData0Dirty bool = false
 var z80TileData1Dirty bool = false
+
 var z80LastLy uint8 = 0
+var z80LastLcdMode uint8 = 0
 
 var z80Fps Fps
 var z80FrameCount uint64
@@ -159,7 +161,7 @@ func triggerInterrupt(interrupt uint16) {
 func setLcdInterrupts() {
 	// vblank
 	ly := ioLy()
-	if z80LastLy == 143 && ly == 144 {
+	if z80LastLy != 144 && ly == 144 {
 		// track fps
 		z80FrameCount++
 		if z80FrameCount%60 == 0 {
@@ -168,7 +170,24 @@ func setLcdInterrupts() {
 
 		write(REG_IF, read(REG_IF)|(1<<INT_VBLANK))
 	}
+
+	mode := ioLcdMode()
+	stat := read(REG_STAT)
+	if (stat & STAT_LYC) > 0 {
+		lyc := read(REG_LYC)
+		if z80LastLy != lyc && ly == lyc {
+			write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
+		}
+	} else if (stat&STAT_OAM) > 0 && z80LastLcdMode != STAT_MODE_OAM && mode == STAT_MODE_OAM {
+		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
+	} else if (stat&STAT_VBLANK) > 0 && z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
+		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
+	} else if (stat&STAT_HBLANK) > 0 && z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
+		write(REG_IF, read(REG_IF)|(1<<INT_LCDC))
+	}
+
 	z80LastLy = ly
+	z80LastLcdMode = mode
 }
 
 func handleInterrupts() {
@@ -247,7 +266,7 @@ func HALT() { halted = true; pc += 1; cycles += 4 }
 func STOP() { stopped = true; pc += 1; cycles += 4 }
 
 func EI() { interruptsEnabled = true; cycles += 4; pc += 1 }
-func DI() { interruptsEnabled = false; write(0xff0f, 0); cycles += 4; pc += 1 }
+func DI() { interruptsEnabled = false; cycles += 4; pc += 1 }
 
 func LD_BC_NN() { b = read(pc + 2); c = read(pc + 1); cycles += 12; pc += 3 }
 func LD_DE_NN() { d = read(pc + 2); e = read(pc + 1); cycles += 12; pc += 3 }

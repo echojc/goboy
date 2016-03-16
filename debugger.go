@@ -6,6 +6,7 @@ import (
 	"github.com/deweerdt/gocui"
 )
 
+var debuggerRunning bool // STRICTLY READONLY
 var debuggerBreakpoints []uint16 = []uint16{}
 var debuggerEvents chan *DebuggerEvent
 
@@ -27,7 +28,7 @@ type DebuggerEvent struct {
 const cyclesPerNanosecond = 0.004194304
 
 func debuggerLoop(events <-chan *DebuggerEvent) {
-	running := false
+	debuggerRunning := false
 	ticker := time.Tick(time.Millisecond)
 	var startCycle uint64
 	var startTime int64
@@ -38,34 +39,34 @@ func debuggerLoop(events <-chan *DebuggerEvent) {
 		case ev := <-events:
 			switch ev.Event {
 			case DEBUGGER_RUN:
-				running = true
+				debuggerRunning = true
 				startCycle = cycles
 				startTime = time.Now().UnixNano()
 				runGui = ev.G
 				viewDisassemblerPcLock = false
 				debuggerUpdateGui(ev.G)
 			case DEBUGGER_STEP:
-				if !running {
+				if !debuggerRunning {
 					Step()
 					viewDisassemblerPcLock = true
 					debuggerUpdateGui(ev.G)
 				}
 			case DEBUGGER_BREAK:
-				running = false
+				debuggerRunning = false
 				viewDisassemblerPcLock = true
 				debuggerUpdateGui(ev.G)
 			case DEBUGGER_QUIT:
 				return
 			}
 		case <-ticker:
-			if running {
+			if debuggerRunning {
 				for {
 					// step first to avoid double breakpoint issues
 					Step()
 
 					// check for breakpoints - stop running if found
 					if isBreakpoint(pc) {
-						running = false
+						debuggerRunning = false
 						viewDisassemblerPcLock = true
 						debuggerUpdateGui(runGui)
 						break

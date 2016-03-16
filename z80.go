@@ -78,11 +78,11 @@ func read(addr uint16) uint8 {
 	case addr < 0xff4c:
 		// io registers
 		switch addr {
-		case 0xff00: // P1
+		case REG_KEY: // P1
 			return io[0x00]&0xf0 | ioP1()
-		case 0xff41: // STAT
-			return io[0x41]&0xfc | ioLcdMode()
-		case 0xff44: // LY
+		case REG_STAT: // STAT
+			return io[0x41]&0x78 | ioLcdYCoincidence() | ioLcdMode()
+		case REG_LY: // LY
 			return ioLy()
 		default:
 			return io[addr-0xff00]
@@ -153,7 +153,7 @@ const (
 
 func triggerInterrupt(interrupt uint16) {
 	// set IF register
-	write(0xff0f, read(0xff0f)|(1<<interrupt))
+	write(REG_IF, read(REG_IF)|(1<<interrupt))
 }
 
 func setLcdInterrupts() {
@@ -166,7 +166,7 @@ func setLcdInterrupts() {
 			z80Fps.Add(z80FrameCount)
 		}
 
-		write(0xff0f, read(0xff0f)|(1<<INT_VBLANK))
+		write(REG_IF, read(REG_IF)|(1<<INT_VBLANK))
 	}
 	z80LastLy = ly
 }
@@ -176,13 +176,13 @@ func handleInterrupts() {
 		return
 	}
 
-	flags := read(0xff0f)
+	flags := read(REG_IF)
 	masked := interrupt & flags
 	for i := INT_VBLANK; i <= INT_KEY; i++ {
 		if ((masked >> i) & 0x01) > 0 {
 			// disable interrupts and reset IF (but don't touch IE)
 			interruptsEnabled = false
-			write(0xff0f, 0)
+			write(REG_IF, 0)
 
 			// push pc and jump
 			write(sp-1, uint8(pc>>8))

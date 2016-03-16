@@ -267,20 +267,20 @@ func updateIoView(g *gocui.Gui) error {
 		interruptStatus = "on "
 	}
 	fmt.Fprintf(v, " I:%s   KSTLV\n", interruptStatus)
-	fmt.Fprintf(v, " IE   %08b\n", read(0xffff))
-	fmt.Fprintf(v, " IF   %08b\n", read(0xff0f))
+	fmt.Fprintf(v, " IE   %08b\n", read(REG_IE))
+	fmt.Fprintf(v, " IF   %08b\n", read(REG_IF))
 
 	fmt.Fprintf(v, "      M W   OB\n")
-	fmt.Fprintf(v, " LCDC %08b\n", read(0xff40))
+	fmt.Fprintf(v, " LCDC %08b\n", read(REG_LCDC))
 
 	fmt.Fprintf(v, "       YOVHC M\n")
-	fmt.Fprintf(v, " STAT %08b\n", read(0xff41))
-	fmt.Fprintf(v, " LY   %08b\n", read(0xff44))
-	fmt.Fprintf(v, " LYC  %08b\n", read(0xff45))
+	fmt.Fprintf(v, " STAT %08b\n", read(REG_STAT))
+	fmt.Fprintf(v, " LY   %08b\n", read(REG_LY))
+	fmt.Fprintf(v, " LYC  %08b\n", read(REG_LYC))
 
-	fmt.Fprintf(v, " BGP  %08b\n", read(0xff47))
-	fmt.Fprintf(v, " OBP1 %08b\n", read(0xff48))
-	fmt.Fprintf(v, " OBP2 %08b\n", read(0xff49))
+	fmt.Fprintf(v, " BGP  %08b\n", read(REG_BGP))
+	fmt.Fprintf(v, " OBP1 %08b\n", read(REG_OBP1))
+	fmt.Fprintf(v, " OBP2 %08b\n", read(REG_OBP2))
 
 	return nil
 }

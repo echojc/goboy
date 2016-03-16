@@ -48,7 +48,7 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 
 		// rerender textures if necessary
 		// only rerender if lcd is enabled
-		if (read(0xff40) & 0x80) > 0 {
+		if (read(REG_LCDC) & 0x80) > 0 {
 			if z80TileData0Dirty {
 				UpdateTileData0()
 			}
@@ -166,7 +166,7 @@ func updateTileData(textureId uint32, addrFunc func(uint8) uint16) {
 
 func getCurrentPalette() [4]uint8 {
 	colors := [4]uint8{0xff, 0xaa, 0x55, 0x00}
-	palette := read(0xff47)
+	palette := read(REG_BGP)
 	return [4]uint8{
 		colors[palette&0x03],
 		colors[(palette>>2)&0x03],

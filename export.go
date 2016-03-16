@@ -92,7 +92,7 @@ func convertTileLine(l uint8, h uint8) [8]color.Gray {
 }
 
 func convertTilePalette(i uint8) color.Gray {
-	palette := read(0xff47)
+	palette := read(REG_BGP)
 	colorMapIndex := (palette >> (i * 2)) & 0x03
 	return colorMap[colorMapIndex]
 }

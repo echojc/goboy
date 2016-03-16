@@ -14,6 +14,7 @@ const windowTitleFormat = "goboy vfps:%.01f cfps:%.01f"
 var glFps Fps
 var glFrameCount uint64
 
+var texTileData0 uint32
 var texTileData1 uint32
 
 func glCreateWindow() (*glfw.Window, error) {
@@ -37,6 +38,7 @@ func glCreateWindow() (*glfw.Window, error) {
 	gl.LoadIdentity()
 
 	gl.Enable(gl.TEXTURE_2D)
+	gl.GenTextures(1, &texTileData0)
 	gl.GenTextures(1, &texTileData1)
 
 	return window, nil
@@ -60,6 +62,7 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 		// clear screen
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
+		// todo: bind the correct texture based on LCDC
 		// tile map 0, tile data 1
 		gl.BindTexture(gl.TEXTURE_2D, texTileData1)
 		var x, y int32
@@ -108,7 +111,7 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 }
 
 func UpdateTileData0() {
-	updateTileData(texTileData1, func(id uint8) uint16 {
+	updateTileData(texTileData0, func(id uint8) uint16 {
 		return 0x8000 + (uint16(id) << 4)
 	})
 

@@ -298,8 +298,15 @@ func updateMiscView(g *gocui.Gui) error {
 	}
 	v.Clear()
 
+	if debuggerRunning {
+		fmt.Fprintln(v, " running")
+	} else {
+		fmt.Fprintln(v, " paused")
+	}
+
+	fmt.Fprintf(v, " cycles: %d", cyclesWrapped)
 	if halted {
-		fmt.Fprintf(v, " halted")
+		fmt.Fprintln(v, " (halted)")
 	}
 
 	return nil

@@ -28,7 +28,7 @@ type DebuggerEvent struct {
 const cyclesPerNanosecond = 0.004194304
 
 func debuggerLoop(events <-chan *DebuggerEvent) {
-	debuggerRunning := false
+	running := false
 	ticker := time.Tick(time.Millisecond)
 	var startCycle uint64
 	var startTime int64
@@ -40,35 +40,35 @@ func debuggerLoop(events <-chan *DebuggerEvent) {
 			switch ev.Event {
 			case DEBUGGER_RUN:
 				debuggerRunning = true
+				running = true
 				startCycle = cycles
 				startTime = time.Now().UnixNano()
 				runGui = ev.G
 				viewDisassemblerPcLock = false
 				debuggerUpdateGui(ev.G)
 			case DEBUGGER_STEP:
-				if !debuggerRunning {
+				if !running {
 					Step()
 					viewDisassemblerPcLock = true
 					debuggerUpdateGui(ev.G)
 				}
 			case DEBUGGER_BREAK:
 				debuggerRunning = false
+				running = false
 				viewDisassemblerPcLock = true
 				debuggerUpdateGui(ev.G)
 			case DEBUGGER_QUIT:
 				return
 			}
 		case <-ticker:
-			if debuggerRunning {
+			if running {
 				for {
 					// step first to avoid double breakpoint issues
 					Step()
 
 					// check for breakpoints - stop running if found
 					if isBreakpoint(pc) {
-						debuggerRunning = false
-						viewDisassemblerPcLock = true
-						debuggerUpdateGui(runGui)
+						debuggerBreak(runGui)
 						break
 					}
 

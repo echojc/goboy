@@ -43,6 +43,15 @@ const (
 	TIMER_MODE_65536  uint8 = 0x02
 	TIMER_MODE_16384  uint8 = 0x03
 	TIMER_ENABLE      uint8 = 0x04
+
+	KEY_DOWN   uint8 = 0x80
+	KEY_UP     uint8 = 0x40
+	KEY_LEFT   uint8 = 0x20
+	KEY_RIGHT  uint8 = 0x10
+	KEY_START  uint8 = 0x08
+	KEY_SELECT uint8 = 0x04
+	KEY_B      uint8 = 0x02
+	KEY_A      uint8 = 0x01
 )
 
 func isBitSetAddr(addr uint16, bit uint8) bool {
@@ -53,9 +62,19 @@ func isBitSet(v uint8, bit uint8) bool {
 	return (v & bit) > 0
 }
 
+// keys are backwards: 0 = down, 1 = up
+var ioKeys uint8 = 0xff
+
 func ioP1() uint8 {
-	// TODO keys (0 = down, 1 = up)
-	return 0x0f
+	keys := io[0] // can't use read() because recursive
+
+	if (keys & 0x10) == 0 { // bit 4 is low == dpad
+		return ioKeys >> 4
+	} else if (keys & 0x20) == 0 { // bit 5 is low == buttons
+		return ioKeys & 0x0f
+	} else {
+		return 0x0f
+	}
 }
 
 func ioLy() uint8 {

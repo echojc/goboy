@@ -29,6 +29,8 @@ func glCreateWindow() (*glfw.Window, error) {
 	}
 	window.MakeContextCurrent()
 
+	window.SetKeyCallback(glKeyCallback)
+
 	gl.ClearColor(1.0, 1.0, 1.0, 0.0)
 
 	gl.MatrixMode(gl.PROJECTION)
@@ -41,6 +43,28 @@ func glCreateWindow() (*glfw.Window, error) {
 	gl.GenTextures(1, &texScreen)
 
 	return window, nil
+}
+
+var keyMap = map[glfw.Key]uint8{
+	glfw.KeyDown:  KEY_DOWN,
+	glfw.KeyUp:    KEY_UP,
+	glfw.KeyLeft:  KEY_LEFT,
+	glfw.KeyRight: KEY_RIGHT,
+	glfw.KeyEnter: KEY_START,
+	glfw.KeyX:     KEY_SELECT,
+	glfw.KeyB:     KEY_B,
+	glfw.KeySpace: KEY_A,
+}
+
+func glKeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
+	if gbKey, match := keyMap[key]; match {
+		switch action {
+		case glfw.Press: // down, clear bit
+			ioKeys &= ^gbKey
+		case glfw.Release: // up, set bit
+			ioKeys |= gbKey
+		}
+	}
 }
 
 func glMainLoop(window *glfw.Window, g *gocui.Gui) {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/deweerdt/gocui"
 	"github.com/go-gl/gl/v2.1/gl"
@@ -13,9 +12,10 @@ const windowTitleFormat = "goboy vfps:%.01f cfps:%.01f"
 
 var glFps Fps
 var glFrameCount uint64
+var glCurrentScreenBuffer []uint8
+var glScreenDirty bool
 
-var texTileData0 uint32
-var texTileData1 uint32
+var texScreen uint32
 
 func glCreateWindow() (*glfw.Window, error) {
 	glfw.WindowHint(glfw.Resizable, glfw.False)
@@ -23,7 +23,7 @@ func glCreateWindow() (*glfw.Window, error) {
 	glfw.WindowHint(glfw.ContextVersionMinor, 1)
 
 	title := fmt.Sprintf(windowTitleFormat, 0.0, 0.0)
-	window, err := glfw.CreateWindow(320, 288, title, nil, nil)
+	window, err := glfw.CreateWindow(LCD_WIDTH*2, LCD_HEIGHT*2, title, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -33,13 +33,12 @@ func glCreateWindow() (*glfw.Window, error) {
 
 	gl.MatrixMode(gl.PROJECTION)
 	gl.LoadIdentity()
-	gl.Ortho(0.0, 160.0, 144.0, 0.0, 1.0, -1.0)
+	gl.Ortho(0.0, LCD_WIDTH, LCD_HEIGHT, 0.0, 1.0, -1.0)
 	gl.MatrixMode(gl.MODELVIEW)
 	gl.LoadIdentity()
 
 	gl.Enable(gl.TEXTURE_2D)
-	gl.GenTextures(1, &texTileData0)
-	gl.GenTextures(1, &texTileData1)
+	gl.GenTextures(1, &texScreen)
 
 	return window, nil
 }
@@ -49,59 +48,33 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 	for !window.ShouldClose() && !guiCompleted {
 		lcdc := read(REG_LCDC)
 
-		// rerender textures if necessary
-		// only rerender if lcd is enabled
-		if isBitSet(lcdc, LCDC_ENABLE) {
-			if z80TileData0Dirty {
-				UpdateTileData0()
-			}
-			if z80TileData1Dirty {
-				UpdateTileData1()
-			}
-		}
-
 		// clear screen
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
-		// bind the correct texture based on LCDC
-		var texTileData = texTileData1
-		if isBitSet(lcdc, LCDC_BG_WINDOW_TILE_DATA) {
-			texTileData = texTileData0
-		}
-		gl.BindTexture(gl.TEXTURE_2D, texTileData)
+		// only render if lcd is enabled
+		if isBitSet(lcdc, LCDC_ENABLE) {
 
-		// choose bg tile map based on LCDC
-		var tileMapBaseAddr int32 = 0x9800
-		if isBitSet(lcdc, LCDC_BG_TILE_MAP) {
-			tileMapBaseAddr = 0x9c00
-		}
-
-		// render bg
-		var x, y int32
-		for y = 0; y < 0x20; y++ {
-			for x = 0; x < 0x20; x++ {
-				addr := uint16(tileMapBaseAddr + (y*0x20 + x))
-				tile := read(addr)
-				tileX := float32(tile&0x0f) / 16
-				tileY := float32(tile>>4) / 16
-				stride := float32(1) / 16
-
-				gl.Begin(gl.QUADS)
-
-				gl.TexCoord2f(tileX, tileY)
-				gl.Vertex2i(x*8, y*8)
-
-				gl.TexCoord2f(tileX, tileY+stride)
-				gl.Vertex2i(x*8, (y+1)*8)
-
-				gl.TexCoord2f(tileX+stride, tileY+stride)
-				gl.Vertex2i((x+1)*8, (y+1)*8)
-
-				gl.TexCoord2f(tileX+stride, tileY)
-				gl.Vertex2i((x+1)*8, y*8)
-
-				gl.End()
+			if glScreenDirty {
+				glUpdateScreen()
 			}
+			gl.BindTexture(gl.TEXTURE_2D, texScreen)
+
+			// render bg
+			gl.Begin(gl.QUADS)
+
+			gl.TexCoord2f(0, 0)
+			gl.Vertex2i(0, 0)
+
+			gl.TexCoord2f(0, 1)
+			gl.Vertex2i(0, LCD_HEIGHT)
+
+			gl.TexCoord2f(1, 1)
+			gl.Vertex2i(LCD_WIDTH, LCD_HEIGHT)
+
+			gl.TexCoord2f(1, 0)
+			gl.Vertex2i(LCD_WIDTH, 0)
+
+			gl.End()
 		}
 
 		glFrameCount++
@@ -122,70 +95,18 @@ func glMainLoop(window *glfw.Window, g *gocui.Gui) {
 	})
 }
 
-func UpdateTileData0() {
-	updateTileData(texTileData0, func(id uint8) uint16 {
-		return 0x8000 + (uint16(id) << 4)
-	})
-
-	z80TileData0Dirty = false
-	log.Println("Rendered tile data 0 to texture, resetting dirty flag")
+func glSetBuffer(buffer []uint8) {
+	glCurrentScreenBuffer = buffer
+	glScreenDirty = true
 }
 
-func UpdateTileData1() {
-	updateTileData(texTileData1, func(id uint8) uint16 {
-		switch {
-		case id < 0x80:
-			return 0x9000 + (uint16(id) << 4)
-		default:
-			return 0x8000 + (uint16(id) << 4)
-		}
-	})
+func glUpdateScreen() {
+	buffer := glCurrentScreenBuffer
 
-	z80TileData1Dirty = false
-	log.Println("Rendered tile data 1 to texture, resetting dirty flag")
-}
-
-func updateTileData(textureId uint32, addrFunc func(uint8) uint16) {
-	// cache palette as rgb values
-	palette := getCurrentPalette()
-
-	// decode texture data
-	var texture [0x4000]uint8
-	for id := 0; id < 0x100; id++ {
-		addr := addrFunc(uint8(id))
-
-		for y := 0; y < 8; y++ {
-			// read bit values
-			l := read(addr)
-			addr++
-			h := read(addr)
-			addr++
-
-			for x := 0; x < 8; x++ {
-				bit := uint(7 - x)
-				paletteIndex := ((l >> bit) & 0x01) | (((h >> bit) & 0x01) << 1)
-
-				offsetY := (id>>4)*0x400 + y*0x80
-				offsetX := (id&0x0f)*8 + x
-				texture[offsetY+offsetX] = palette[paletteIndex]
-			}
-		}
-	}
-
-	// blit tile data
-	gl.BindTexture(gl.TEXTURE_2D, textureId)
-	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 128, 128, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, gl.Ptr(&texture[0]))
+	gl.BindTexture(gl.TEXTURE_2D, texScreen)
+	gl.TexImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, LCD_WIDTH, LCD_HEIGHT, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, gl.Ptr(&buffer[0]))
 	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
 	gl.TexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-}
 
-func getCurrentPalette() [4]uint8 {
-	colors := [4]uint8{0xff, 0xaa, 0x55, 0x00}
-	palette := read(REG_BGP)
-	return [4]uint8{
-		colors[palette&0x03],
-		colors[(palette>>2)&0x03],
-		colors[(palette>>4)&0x03],
-		colors[(palette>>6)&0x03],
-	}
+	glScreenDirty = false
 }

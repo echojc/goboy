@@ -50,6 +50,7 @@ func Step() {
 	cyclesWrapped = uint32(cycles % cyclesPerFrame)
 
 	handleDma()
+	handleLcd()
 
 	setLcdInterrupts()
 	handleInterrupts()
@@ -169,6 +170,15 @@ func handleDma() {
 	for ; z80DmaBytesLeft > 0 && (0xa0-z80DmaBytesLeft) < targetBytes; z80DmaBytesLeft-- {
 		offset := uint16(0xa0 - z80DmaBytesLeft)
 		write(0xfe00+offset, read(z80DmaStartAddr+offset))
+	}
+}
+
+func handleLcd() {
+	mode := ioLcdMode()
+	if z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
+		LcdSwapBuffers()
+	} else if z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
+		LcdBlitRow()
 	}
 }
 

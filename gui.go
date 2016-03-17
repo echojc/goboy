@@ -68,7 +68,7 @@ func guiLayout(g *gocui.Gui) error {
 const RegistersViewWidth = 30
 const RegistersViewHeight = 7
 const DisassemblerViewWidth = 48
-const IoViewWidth = 18
+const IoViewWidth = 21
 
 //////////////////////////////////////////
 // Registers
@@ -267,20 +267,31 @@ func updateIoView(g *gocui.Gui) error {
 		interruptStatus = "on "
 	}
 	fmt.Fprintf(v, " I:%s   KSTLV\n", interruptStatus)
-	fmt.Fprintf(v, " IE   %08b\n", read(REG_IE))
-	fmt.Fprintf(v, " IF   %08b\n", read(REG_IF))
+	fmt.Fprintf(v, " IE   %08b %02x\n", read(REG_IE), read(REG_IE))
+	fmt.Fprintf(v, " IF   %08b %02x\n", read(REG_IF), read(REG_IF))
 
 	fmt.Fprintf(v, "      M W   OB\n")
-	fmt.Fprintf(v, " LCDC %08b\n", read(REG_LCDC))
+	fmt.Fprintf(v, " LCDC %08b %02x\n", read(REG_LCDC), read(REG_LCDC))
 
 	fmt.Fprintf(v, "       YOVHC M\n")
-	fmt.Fprintf(v, " STAT %08b\n", read(REG_STAT))
-	fmt.Fprintf(v, " LY   %08b\n", read(REG_LY))
-	fmt.Fprintf(v, " LYC  %08b\n", read(REG_LYC))
+	fmt.Fprintf(v, " STAT %08b %02x\n", read(REG_STAT), read(REG_STAT))
+	fmt.Fprintf(v, " LY   %08b %02x\n", read(REG_LY), read(REG_LY))
+	fmt.Fprintf(v, " LYC  %08b %02x\n", read(REG_LYC), read(REG_LYC))
 
-	fmt.Fprintf(v, " BGP  %08b\n", read(REG_BGP))
-	fmt.Fprintf(v, " OBP1 %08b\n", read(REG_OBP0))
-	fmt.Fprintf(v, " OBP2 %08b\n", read(REG_OBP1))
+	fmt.Fprintln(v)
+	fmt.Fprintf(v, " BGP  %08b %02x\n", read(REG_BGP), read(REG_BGP))
+	fmt.Fprintf(v, " OBP1 %08b %02x\n", read(REG_OBP0), read(REG_OBP0))
+	fmt.Fprintf(v, " OBP2 %08b %02x\n", read(REG_OBP1), read(REG_OBP1))
+
+	fmt.Fprintln(v)
+	fmt.Fprintf(v, " SCX  %08b %02x\n", read(REG_SCX), read(REG_SCX))
+	fmt.Fprintf(v, " SCY  %08b %02x\n", read(REG_SCY), read(REG_SCY))
+
+	fmt.Fprintln(v)
+	fmt.Fprintf(v, " DIV  %08b %02x\n", read(REG_DIV), read(REG_DIV))
+	fmt.Fprintf(v, " TIMA %08b %02x\n", read(REG_TIMA), read(REG_TIMA))
+	fmt.Fprintf(v, " TMA  %08b %02x\n", read(REG_TMA), read(REG_TMA))
+	fmt.Fprintf(v, " TAC  %08b %02x\n", read(REG_TAC), read(REG_TAC))
 
 	return nil
 }

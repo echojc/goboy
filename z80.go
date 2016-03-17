@@ -26,8 +26,10 @@ var z80SmallestDirtyAddr uint16 = 0xffff
 var z80TileData0Dirty bool = false
 var z80TileData1Dirty bool = false
 
+var z80LastCycle uint64 = 0
 var z80LastLy uint8 = 0
 var z80LastLcdMode uint8 = 0
+var z80LastTimer uint8 = 0
 
 var z80Fps Fps
 var z80FrameCount uint64
@@ -40,6 +42,8 @@ const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
 func Step() {
+	z80LastCycle = cycles
+
 	if !halted && !stopped {
 		opcodes[read(pc)]()
 	} else {
@@ -51,8 +55,10 @@ func Step() {
 
 	handleDma()
 	handleLcd()
+	handleTimers()
 
 	setLcdInterrupts()
+	setTimerInterrupt()
 	handleInterrupts()
 }
 
@@ -141,6 +147,8 @@ func write(addr uint16, v uint8) {
 	case addr < 0xff4c:
 		// io registers
 		switch addr {
+		case REG_DIV:
+			io[addr-0xff00] = 0
 		case REG_DMA:
 			z80DmaStartAddr = uint16(v) << 8
 			z80DmaBytesLeft = 0xa0
@@ -180,6 +188,35 @@ func handleLcd() {
 			LcdSwapBuffers()
 		} else if z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
 			LcdBlitRow()
+		}
+	}
+}
+
+func handleTimers() {
+	// div
+	if cycles/256 > z80LastCycle/256 { // 2^22 / 2^14 == 256
+		io[REG_DIV-0xff00]++
+	}
+
+	// timer
+	z80LastTimer = read(REG_TIMA)
+	tac := read(REG_TAC)
+	if isBitSet(tac, TIMER_ENABLE) {
+		var cyclesPerTick uint64
+
+		switch tac & 0x03 {
+		case TIMER_MODE_4096:
+			cyclesPerTick = 1024 // == 2^22 / 2^12
+		case TIMER_MODE_262144:
+			cyclesPerTick = 16 // == 2^22 / 2^18
+		case TIMER_MODE_65536:
+			cyclesPerTick = 64 // == 2^22 / 2^16
+		case TIMER_MODE_16384:
+			cyclesPerTick = 256 // == 2^22 / 2^14
+		}
+
+		if cycles/cyclesPerTick > z80LastCycle/cyclesPerTick {
+			write(REG_TIMA, z80LastTimer+1)
 		}
 	}
 }
@@ -227,6 +264,12 @@ func setLcdInterrupts() {
 
 	z80LastLy = ly
 	z80LastLcdMode = mode
+}
+
+func setTimerInterrupt() {
+	if z80LastTimer == 0xff && read(REG_TIMA) == 0 {
+		write(REG_IF, read(REG_IF)|(1<<INT_TIMER))
+	}
 }
 
 func handleInterrupts() {

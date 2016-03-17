@@ -2,6 +2,10 @@ package main
 
 const (
 	REG_KEY  uint16 = 0xff00
+	REG_DIV  uint16 = 0xff04
+	REG_TIMA uint16 = 0xff05
+	REG_TMA  uint16 = 0xff06
+	REG_TAC  uint16 = 0xff07
 	REG_IF   uint16 = 0xff0f
 	REG_LCDC uint16 = 0xff40
 	REG_STAT uint16 = 0xff41
@@ -33,6 +37,12 @@ const (
 	STAT_MODE_VBLANK uint8 = 0x01
 	STAT_MODE_OAM    uint8 = 0x02
 	STAT_MODE_LCD    uint8 = 0x03
+
+	TIMER_MODE_4096   uint8 = 0x00
+	TIMER_MODE_262144 uint8 = 0x01
+	TIMER_MODE_65536  uint8 = 0x02
+	TIMER_MODE_16384  uint8 = 0x03
+	TIMER_ENABLE      uint8 = 0x04
 )
 
 func isBitSetAddr(addr uint16, bit uint8) bool {

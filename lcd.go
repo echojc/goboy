@@ -59,7 +59,7 @@ func LcdBlitRow() {
 		x := (xOffset + int(scx)) % LCD_BG_WIDTH
 		tileDataIndexAddr := tileMapBaseAddr + (uint16(y/8) * 0x20) + uint16(x/8)
 		tileDataAddr := tileDataBaseAddr + uint16(read(tileDataIndexAddr))<<4
-		if tileDataAddr > 0x9800 {
+		if tileDataAddr >= 0x9800 {
 			tileDataAddr -= 0x1000
 		}
 

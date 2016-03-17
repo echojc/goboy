@@ -107,14 +107,14 @@ func LcdBlitRow() {
 
 			pixelY := uint8(int(y) - actualY)
 			if sprite.yFlip {
-				pixelY = spriteHeight - pixelY
+				pixelY = (spriteHeight - 1) - pixelY
 			}
 
 			tileDataAddr := GPU_TILE_DATA_1 + (uint16(sprite.tile) << 4)
 			for ; i < SPRITE_WIDTH; i++ {
 				pixelX := uint8(i)
 				if sprite.xFlip {
-					pixelX = SPRITE_WIDTH - pixelX
+					pixelX = (SPRITE_WIDTH - 1) - pixelX
 				}
 
 				// 0 is transparent

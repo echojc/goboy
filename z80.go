@@ -23,8 +23,6 @@ var cyclesWrapped uint32
 var romBank uint8 = 1
 
 var z80SmallestDirtyAddr uint16 = 0xffff
-var z80TileData0Dirty bool = false
-var z80TileData1Dirty bool = false
 
 var z80LastCycle uint64 = 0
 var z80LastLy uint8 = 0
@@ -126,12 +124,6 @@ func write(addr uint16, v uint8) {
 		// rom #1-x
 	case addr < 0xa000:
 		vram[addr-0x8000] = v
-		if addr < 0x9000 {
-			z80TileData0Dirty = true
-		}
-		if addr >= 0x8800 && addr < 0x9800 {
-			z80TileData1Dirty = true
-		}
 	case addr < 0xc000:
 		// ram #1-x
 	case addr < 0xe000:

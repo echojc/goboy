@@ -118,10 +118,6 @@ func LcdBlitRow() {
 				}
 
 				// 0 is transparent
-				//if sprite.tile == 0 || sprite.tile == 1 {
-				//	offsetAddr := tileDataAddr + uint16(pixelY)*2
-				//	log.Printf("t:%d x:%d y:%d addr:%04x px:%d py:%d lx:%d ly:%d", sprite.tile, actualX, actualY, offsetAddr, pixelX, pixelY, xOffset, y)
-				//}
 				paletteIndex := tilePaletteIndex(tileDataAddr, pixelX, pixelY)
 				if paletteIndex != 0 {
 					buffer[bufferBaseOffset+xOffset] = objPalette[paletteIndex]

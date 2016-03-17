@@ -2582,133 +2582,133 @@ func SWAP_A() {
 	pc += 2
 }
 
-func BIT_0_B() { fz = b&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_0_C() { fz = c&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_0_D() { fz = d&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_0_E() { fz = e&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_0_H() { fz = h&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_0_L() { fz = l&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_B() { fz = b&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_C() { fz = c&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_D() { fz = d&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_E() { fz = e&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_H() { fz = h&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_L() { fz = l&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_0_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x01 > 0
+	fz = n&0x01 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_0_A() { fz = a&0x01 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_0_A() { fz = a&0x01 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_1_B() { fz = b&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_1_C() { fz = c&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_1_D() { fz = d&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_1_E() { fz = e&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_1_H() { fz = h&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_1_L() { fz = l&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_B() { fz = b&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_C() { fz = c&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_D() { fz = d&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_E() { fz = e&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_H() { fz = h&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_L() { fz = l&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_1_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x02 > 0
+	fz = n&0x02 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_1_A() { fz = a&0x02 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_1_A() { fz = a&0x02 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_2_B() { fz = b&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_2_C() { fz = c&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_2_D() { fz = d&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_2_E() { fz = e&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_2_H() { fz = h&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_2_L() { fz = l&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_B() { fz = b&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_C() { fz = c&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_D() { fz = d&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_E() { fz = e&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_H() { fz = h&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_L() { fz = l&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_2_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x04 > 0
+	fz = n&0x04 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_2_A() { fz = a&0x04 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_2_A() { fz = a&0x04 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_3_B() { fz = b&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_3_C() { fz = c&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_3_D() { fz = d&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_3_E() { fz = e&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_3_H() { fz = h&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_3_L() { fz = l&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_B() { fz = b&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_C() { fz = c&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_D() { fz = d&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_E() { fz = e&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_H() { fz = h&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_L() { fz = l&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_3_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x08 > 0
+	fz = n&0x08 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_3_A() { fz = a&0x08 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_3_A() { fz = a&0x08 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_4_B() { fz = b&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_4_C() { fz = c&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_4_D() { fz = d&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_4_E() { fz = e&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_4_H() { fz = h&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_4_L() { fz = l&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_B() { fz = b&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_C() { fz = c&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_D() { fz = d&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_E() { fz = e&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_H() { fz = h&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_L() { fz = l&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_4_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x10 > 0
+	fz = n&0x10 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_4_A() { fz = a&0x10 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_4_A() { fz = a&0x10 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_5_B() { fz = b&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_5_C() { fz = c&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_5_D() { fz = d&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_5_E() { fz = e&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_5_H() { fz = h&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_5_L() { fz = l&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_B() { fz = b&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_C() { fz = c&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_D() { fz = d&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_E() { fz = e&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_H() { fz = h&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_L() { fz = l&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_5_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x20 > 0
+	fz = n&0x20 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_5_A() { fz = a&0x20 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_5_A() { fz = a&0x20 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_6_B() { fz = b&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_6_C() { fz = c&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_6_D() { fz = d&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_6_E() { fz = e&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_6_H() { fz = h&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_6_L() { fz = l&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_B() { fz = b&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_C() { fz = c&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_D() { fz = d&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_E() { fz = e&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_H() { fz = h&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_L() { fz = l&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_6_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x40 > 0
+	fz = n&0x40 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_6_A() { fz = a&0x40 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_6_A() { fz = a&0x40 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
-func BIT_7_B() { fz = b&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_7_C() { fz = c&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_7_D() { fz = d&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_7_E() { fz = e&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_7_H() { fz = h&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
-func BIT_7_L() { fz = l&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_B() { fz = b&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_C() { fz = c&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_D() { fz = d&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_E() { fz = e&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_H() { fz = h&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_L() { fz = l&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 func BIT_7_mHL() {
 	n := read(uint16(h)<<8 + uint16(l))
-	fz = n&0x80 > 0
+	fz = n&0x80 == 0
 	fn = false
 	fh = true
 	cycles += 16
 	pc += 2
 }
-func BIT_7_A() { fz = a&0x80 > 0; fn = false; fh = true; cycles += 8; pc += 2 }
+func BIT_7_A() { fz = a&0x80 == 0; fn = false; fh = true; cycles += 8; pc += 2 }
 
 func RES_0_B()   { b &= 0xfe; cycles += 8; pc += 2 }
 func RES_0_C()   { c &= 0xfe; cycles += 8; pc += 2 }

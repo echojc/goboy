@@ -279,8 +279,8 @@ func updateIoView(g *gocui.Gui) error {
 	fmt.Fprintf(v, " LYC  %08b\n", read(REG_LYC))
 
 	fmt.Fprintf(v, " BGP  %08b\n", read(REG_BGP))
-	fmt.Fprintf(v, " OBP1 %08b\n", read(REG_OBP1))
-	fmt.Fprintf(v, " OBP2 %08b\n", read(REG_OBP2))
+	fmt.Fprintf(v, " OBP1 %08b\n", read(REG_OBP0))
+	fmt.Fprintf(v, " OBP2 %08b\n", read(REG_OBP1))
 
 	return nil
 }

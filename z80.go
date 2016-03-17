@@ -174,11 +174,13 @@ func handleDma() {
 }
 
 func handleLcd() {
-	mode := ioLcdMode()
-	if z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
-		LcdSwapBuffers()
-	} else if z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
-		LcdBlitRow()
+	if isBitSet(read(REG_LCDC), LCDC_ENABLE) {
+		mode := ioLcdMode()
+		if z80LastLcdMode != STAT_MODE_VBLANK && mode == STAT_MODE_VBLANK {
+			LcdSwapBuffers()
+		} else if z80LastLcdMode != STAT_MODE_HBLANK && mode == STAT_MODE_HBLANK {
+			LcdBlitRow()
+		}
 	}
 }
 

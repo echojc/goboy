@@ -41,7 +41,6 @@ func main() {
 	log.SetOutput(logFile)
 
 	// start debugger
-	LcdInit()
 	debuggerInit()
 
 	// init gocui

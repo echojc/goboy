@@ -11,8 +11,8 @@ const (
 	REG_LYC  uint16 = 0xff45
 	REG_DMA  uint16 = 0xff46
 	REG_BGP  uint16 = 0xff47
-	REG_OBP1 uint16 = 0xff48
-	REG_OBP2 uint16 = 0xff49
+	REG_OBP0 uint16 = 0xff48
+	REG_OBP1 uint16 = 0xff49
 	REG_IE   uint16 = 0xffff
 
 	LCDC_ENABLE              uint8 = 0x80
@@ -20,7 +20,7 @@ const (
 	LCDC_WINDOW_ENABLE       uint8 = 0x20
 	LCDC_BG_WINDOW_TILE_DATA uint8 = 0x10 // 0 = 0x9000, 1 = 0x8000
 	LCDC_BG_TILE_MAP         uint8 = 0x08 // 0 = 0x9800, 1 = 0x9c00
-	LCDC_OBJ_SIZE            uint8 = 0x04 // 0 = 8x8, 1 = 8x16
+	LCDC_OBJ_8X16            uint8 = 0x04 // 0 = 8x8, 1 = 8x16
 	LCDC_OBJ_ENABLE          uint8 = 0x02
 	LCDC_BG_WINDOW_ENABLE    uint8 = 0x01
 

@@ -270,9 +270,11 @@ func updateIoView(g *gocui.Gui) error {
 	fmt.Fprintf(v, " IE   %08b %02x\n", read(REG_IE), read(REG_IE))
 	fmt.Fprintf(v, " IF   %08b %02x\n", read(REG_IF), read(REG_IF))
 
+	fmt.Fprintln(v)
 	fmt.Fprintf(v, "      M W   OB\n")
 	fmt.Fprintf(v, " LCDC %08b %02x\n", read(REG_LCDC), read(REG_LCDC))
 
+	fmt.Fprintln(v)
 	fmt.Fprintf(v, "       YOVHC M\n")
 	fmt.Fprintf(v, " STAT %08b %02x\n", read(REG_STAT), read(REG_STAT))
 	fmt.Fprintf(v, " LY   %08b %02x\n", read(REG_LY), read(REG_LY))
@@ -280,8 +282,8 @@ func updateIoView(g *gocui.Gui) error {
 
 	fmt.Fprintln(v)
 	fmt.Fprintf(v, " BGP  %08b %02x\n", read(REG_BGP), read(REG_BGP))
-	fmt.Fprintf(v, " OBP1 %08b %02x\n", read(REG_OBP0), read(REG_OBP0))
-	fmt.Fprintf(v, " OBP2 %08b %02x\n", read(REG_OBP1), read(REG_OBP1))
+	fmt.Fprintf(v, " OBP0 %08b %02x\n", read(REG_OBP0), read(REG_OBP0))
+	fmt.Fprintf(v, " OBP1 %08b %02x\n", read(REG_OBP1), read(REG_OBP1))
 
 	fmt.Fprintln(v)
 	fmt.Fprintf(v, " SCX  %08b %02x\n", read(REG_SCX), read(REG_SCX))

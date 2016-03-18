@@ -52,89 +52,124 @@ func LcdBlitRow() {
 	lcdc := read(REG_LCDC)
 	scx := read(REG_SCX)
 	scy := read(REG_SCY)
-	y := ioLy() + scy
+	y := ioLy()
+	bgY := uint8((int(y) + int(scy)) % LCD_BG_HEIGHT)
 	bufferBaseOffset := int(y) * LCD_WIDTH
 
-	// render bg
-	if isBitSet(lcdc, LCDC_BG_WINDOW_ENABLE) {
-		mapBaseAddr := GPU_TILE_MAP_0
-		if isBitSet(lcdc, LCDC_BG_TILE_MAP) {
-			mapBaseAddr = GPU_TILE_MAP_1
-		}
-		dataBaseAddr := GPU_TILE_DATA_0
-		if isBitSet(lcdc, LCDC_BG_WINDOW_TILE_DATA) {
-			dataBaseAddr = GPU_TILE_DATA_1
-		}
+	// palettes
+	bgPalette := currentBgWindowPalette()
+	obj0Palette := currentObjPalette(false)
+	obj1Palette := currentObjPalette(true)
 
-		bgPalette := currentBgWindowPalette()
-
-		for xOffset := 0; xOffset < LCD_WIDTH; xOffset++ {
-			x := (xOffset + int(scx)) % LCD_BG_WIDTH
-			tileDataAddr := tileDataAddr(mapBaseAddr, dataBaseAddr, uint8(x), y)
-
-			tileX := uint8(x % 8)
-			tileY := uint8(y % 8)
-			tilePaletteIndex := tilePaletteIndex(tileDataAddr, tileX, tileY)
-
-			buffer[bufferBaseOffset+xOffset] = bgPalette[tilePaletteIndex]
-		}
+	// sprite height
+	is8x16Mode := isBitSet(lcdc, LCDC_OBJ_8X16)
+	var spriteHeight uint8 = 8
+	if is8x16Mode {
+		spriteHeight = 16
 	}
 
-	// render sprites on top
-	// TODO optimise with bg?
+	// get vram addresses
+	bgMapBaseAddr := GPU_TILE_MAP_0
+	if isBitSet(lcdc, LCDC_BG_TILE_MAP) {
+		bgMapBaseAddr = GPU_TILE_MAP_1
+	}
+	//windowMapBaseAddr := GPU_TILE_MAP_0
+	//if isBitSet(lcdc, LCDC_WINDOW_TILE_MAP) {
+	//	windowMapBaseAddr = GPU_TILE_MAP_1
+	//}
+	bgWindowDataBaseAddr := GPU_TILE_DATA_0
+	if isBitSet(lcdc, LCDC_BG_WINDOW_TILE_DATA) {
+		bgWindowDataBaseAddr = GPU_TILE_DATA_1
+	}
+
+	// read sprites if necessary
+	var sortedSprites []*SpriteData = nil
 	if isBitSet(lcdc, LCDC_OBJ_ENABLE) {
-		// TODO 8x16 sprites
+		sortedSprites = readSprites(y, is8x16Mode)
+	}
 
-		is8x16Mode := isBitSet(lcdc, LCDC_OBJ_8X16)
-		sortedSprites := readSprites(y, is8x16Mode)
-		xOffset := 0
+	spriteIndex := 0
+	var x uint8
+	for x = 0; x < LCD_WIDTH; x++ {
 
-		var spriteHeight uint8 = 8
-		if is8x16Mode {
-			spriteHeight = 16
-		}
+		// start with sprites
+		var sprite *SpriteData = nil
+		if isBitSet(lcdc, LCDC_OBJ_ENABLE) {
 
-		for _, sprite := range sortedSprites {
-			i := 0
-			actualX := int(sprite.x) - SPRITE_X_OFFSET
-			actualY := int(sprite.y) - SPRITE_Y_OFFSET
-			objPalette := currentObjPalette(sprite.palette)
+			// find first sprite that we should draw
+			for ; spriteIndex < len(sortedSprites); spriteIndex++ {
+				// cache the next sprite
+				sprite = sortedSprites[spriteIndex]
 
-			if actualX < xOffset {
-				i = xOffset - actualX
+				// not yet up to it for rendering, reset
+				if x+SPRITE_X_OFFSET < sprite.x {
+					sprite = nil
+					break
+				}
+
+				// up to the sprite now, this is the sprite we want
+				if x+SPRITE_X_OFFSET-SPRITE_WIDTH < sprite.x {
+					break
+				}
 			}
-			xOffset = actualX
 
-			pixelY := uint8(int(y) - actualY)
-			if sprite.yFlip {
-				pixelY = (spriteHeight - 1) - pixelY
+			// cache sprite is nil for priority check later
+			if spriteIndex == len(sortedSprites) {
+				sprite = nil
 			}
 
-			tileDataAddr := GPU_TILE_DATA_1 + (uint16(sprite.tile) << 4)
-			for ; i < SPRITE_WIDTH; i++ {
-				pixelX := uint8(i)
+			// if we found a sprite to draw
+			if sprite != nil {
+				pixelX := x + SPRITE_X_OFFSET - sprite.x
 				if sprite.xFlip {
 					pixelX = (SPRITE_WIDTH - 1) - pixelX
 				}
 
-				// 0 is transparent
-				paletteIndex := tilePaletteIndex(tileDataAddr, pixelX, pixelY)
-				if paletteIndex != 0 {
-					buffer[bufferBaseOffset+xOffset] = objPalette[paletteIndex]
+				pixelY := y + SPRITE_Y_OFFSET - sprite.y
+				if sprite.yFlip {
+					pixelY = (spriteHeight - 1) - pixelY
 				}
 
-				xOffset++
-			}
+				spriteTileAddr := spriteTileAddr(sprite.tile)
+				paletteIndex := tilePaletteIndex(spriteTileAddr, pixelX, pixelY)
 
-			if xOffset >= LCD_WIDTH {
-				break
+				// 0 is transparent
+				if paletteIndex != 0 {
+					objPalette := obj0Palette
+					if sprite.palette {
+						objPalette = obj1Palette
+					}
+					buffer[bufferBaseOffset+int(x)] = objPalette[paletteIndex]
+					continue
+				}
 			}
+		}
+
+		// TODO draw window
+
+		// draw bg
+		if isBitSet(lcdc, LCDC_BG_WINDOW_ENABLE) {
+			bgX := uint8((int(x) + int(scx)) % LCD_BG_WIDTH)
+			bgWindowTileDataAddr := bgWindowTileDataAddr(bgMapBaseAddr, bgWindowDataBaseAddr, bgX, bgY)
+
+			pixelX := uint8(bgX % 8)
+			pixelY := uint8(bgY % 8)
+			tilePaletteIndex := tilePaletteIndex(bgWindowTileDataAddr, pixelX, pixelY)
+
+			buffer[bufferBaseOffset+int(x)] = bgPalette[tilePaletteIndex]
+			continue
 		}
 	}
 }
 
-func tileDataAddr(mapBaseAddr, dataBaseAddr uint16, xPixel, yPixel uint8) uint16 {
-	tileIdAddr := mapBaseAddr + (uint16(yPixel/8) * 0x20) + uint16(xPixel/8)
+func bgWindowOffsetFromPixels(x, y uint8) uint16 {
+	yOffset := uint16(y) / 8
+	xOffset := uint16(x) / 8
+	return yOffset*32 + xOffset
+}
+
+func bgWindowTileDataAddr(mapBaseAddr, dataBaseAddr uint16, xPixel, yPixel uint8) uint16 {
+	tileIdAddr := mapBaseAddr + bgWindowOffsetFromPixels(xPixel, yPixel)
 	tileId := read(tileIdAddr)
 	tileDataAddr := dataBaseAddr + (uint16(tileId) << 4)
 
@@ -145,6 +180,10 @@ func tileDataAddr(mapBaseAddr, dataBaseAddr uint16, xPixel, yPixel uint8) uint16
 	return tileDataAddr
 }
 
+func spriteTileAddr(tileId uint8) uint16 {
+	return GPU_TILE_DATA_1 + (uint16(tileId) << 4)
+}
+
 func tilePaletteIndex(baseAddr uint16, xPixel, yPixel uint8) uint8 {
 	offsetAddr := baseAddr + uint16(yPixel)*2
 	indexLo := (read(offsetAddr) >> (7 - xPixel)) & 0x01
@@ -152,20 +191,19 @@ func tilePaletteIndex(baseAddr uint16, xPixel, yPixel uint8) uint8 {
 	return (indexHi << 1) | indexLo
 }
 
+var paletteColors = [4]uint8{0xff, 0xaa, 0x55, 0x00}
+
 func currentBgWindowPalette() [4]uint8 {
-	colors := [4]uint8{0xff, 0xaa, 0x55, 0x00}
 	palette := read(REG_BGP)
 	return [4]uint8{
-		colors[palette&0x03],
-		colors[(palette>>2)&0x03],
-		colors[(palette>>4)&0x03],
-		colors[(palette>>6)&0x03],
+		paletteColors[palette&0x03],
+		paletteColors[(palette>>2)&0x03],
+		paletteColors[(palette>>4)&0x03],
+		paletteColors[(palette>>6)&0x03],
 	}
 }
 
 func currentObjPalette(isPalette1 bool) [4]uint8 {
-	colors := [4]uint8{0xff, 0xaa, 0x55, 0x00}
-
 	var palette uint8
 	if isPalette1 {
 		palette = read(REG_OBP1)
@@ -174,10 +212,10 @@ func currentObjPalette(isPalette1 bool) [4]uint8 {
 	}
 
 	return [4]uint8{
-		colors[palette&0x03],
-		colors[(palette>>2)&0x03],
-		colors[(palette>>4)&0x03],
-		colors[(palette>>6)&0x03],
+		paletteColors[palette&0x03],
+		paletteColors[(palette>>2)&0x03],
+		paletteColors[(palette>>4)&0x03],
+		paletteColors[(palette>>6)&0x03],
 	}
 }
 
@@ -193,7 +231,7 @@ func readSprites(y uint8, is8x16Mode bool) []*SpriteData {
 	for i = 0; i < 40; i++ {
 		sprite := readSprite(i)
 
-		if sprite.y == 0 || y < sprite.y-SPRITE_Y_OFFSET || y >= sprite.y-SPRITE_Y_OFFSET+spriteHeight {
+		if sprite.y == 0 || y+SPRITE_Y_OFFSET < sprite.y || y+SPRITE_Y_OFFSET-spriteHeight >= sprite.y {
 			continue
 		}
 

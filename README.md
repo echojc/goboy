@@ -8,6 +8,8 @@ Dependencies:
 
 ```sh
 go get github.com/deweerdt/gocui
+go get github.com/go-gl/gl/v2.1/gl
+go get github.com/go-gl/glfw/v3.1/glfw
 ```
 
 Run:

@@ -288,6 +288,8 @@ func updateIoView(g *gocui.Gui) error {
 	fmt.Fprintln(v)
 	fmt.Fprintf(v, " SCX  %08b %02x\n", read(REG_SCX), read(REG_SCX))
 	fmt.Fprintf(v, " SCY  %08b %02x\n", read(REG_SCY), read(REG_SCY))
+	fmt.Fprintf(v, " WX   %08b %02x\n", read(REG_WX), read(REG_WX))
+	fmt.Fprintf(v, " WY   %08b %02x\n", read(REG_WY), read(REG_WY))
 
 	fmt.Fprintln(v)
 	fmt.Fprintf(v, " DIV  %08b %02x\n", read(REG_DIV), read(REG_DIV))

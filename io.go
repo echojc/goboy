@@ -17,6 +17,8 @@ const (
 	REG_BGP  uint16 = 0xff47
 	REG_OBP0 uint16 = 0xff48
 	REG_OBP1 uint16 = 0xff49
+	REG_WY   uint16 = 0xff4a
+	REG_WX   uint16 = 0xff4b
 	REG_IE   uint16 = 0xffff
 
 	LCDC_ENABLE              uint8 = 0x80

@@ -67,6 +67,15 @@ func isBitSet(v uint8, bit uint8) bool {
 // keys are backwards: 0 = down, 1 = up
 var ioKeys uint8 = 0xff
 
+func ioKeyDown(key uint8) {
+	ioKeys &= ^key
+	z80KeyDown = true
+}
+
+func ioKeyUp(key uint8) {
+	ioKeys |= key
+}
+
 func ioP1() uint8 {
 	keys := io[0] // can't use read() because recursive
 

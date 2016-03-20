@@ -36,6 +36,8 @@ var z80DmaStartAddr uint16 = 0
 var z80DmaBytesLeft uint64 = 0
 var z80DmaStartCycle uint64 = 0
 
+var z80KeyDown bool = false
+
 const cyclesPerFrame = 70224
 const cyclesPerLine = 456
 
@@ -57,6 +59,7 @@ func Step() {
 
 	setLcdInterrupts()
 	setTimerInterrupt()
+	setKeyInterrupt()
 	handleInterrupts()
 }
 
@@ -261,6 +264,13 @@ func setLcdInterrupts() {
 func setTimerInterrupt() {
 	if z80LastTimer == 0xff && read(REG_TIMA) == 0 {
 		write(REG_IF, read(REG_IF)|(1<<INT_TIMER))
+	}
+}
+
+func setKeyInterrupt() {
+	if z80KeyDown {
+		z80KeyDown = false
+		write(REG_IF, read(REG_IF)|(1<<INT_KEY))
 	}
 }
 

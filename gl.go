@@ -60,9 +60,9 @@ func glKeyCallback(w *glfw.Window, key glfw.Key, scancode int, action glfw.Actio
 	if gbKey, match := keyMap[key]; match {
 		switch action {
 		case glfw.Press: // down, clear bit
-			ioKeys &= ^gbKey
+			ioKeyDown(gbKey)
 		case glfw.Release: // up, set bit
-			ioKeys |= gbKey
+			ioKeyUp(gbKey)
 		}
 	}
 }

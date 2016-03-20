@@ -2,6 +2,8 @@
 
 Game Boy emulator written in Go. I've always wanted to write an emulator.
 
+See sister project [echojc/gbasm](https://github.com/echojc/gbasm).
+
 ## Compiling
 
 Dependencies:
@@ -17,6 +19,20 @@ Run:
 ```sh
 go run *.go <data-file>
 ```
+
+## Features
+
+- [x] cpu
+- [x] bg
+- [x] sprites
+- [x] window
+- [x] lcd status
+- [x] keys
+- [x] timer
+- [ ] sound
+- [ ] cartridge types
+- [ ] serial transfer
+- [ ] stop mode
 
 ## Resources
 
